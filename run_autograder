@@ -1,0 +1,48 @@
+#!/bin/bash
+
+# total number of times to run each test
+# N=1 for checkpoint, N=8 for final
+# N=1
+N=8
+
+# last index into tests array (T = #tests - 1)
+# T=2 for checkpoint, T=8 for final
+# T=2
+T=8
+
+# weight for computing score (0 < p < 1)
+w=0.85
+
+tests=("TestCheckpoint_Setup" "TestCheckpoint_InitialElection" "TestCheckpoint_ReElection" "TestFinal_BasicAgree" "TestFinal_FailAgree" "TestFinal_FailNoAgree" "TestFinal_Rejoin" "TestFinal_Backup" "TestFinal_Count")
+points=(10 25 30 40 40 50 50 50 25)
+
+totalscore=0
+totalpoints=0
+
+rm -f tests.out
+
+# # Checkpoint tests
+# make checkpoint MKARGS="-timeout 540s -count $N" |& tee tests.out
+
+# all tests
+make test-race MKARGS="-timeout 1620s -count $N" |& tee stests.out
+
+echo ""
+
+for t in $(seq 0 $T); do
+    passed=`grep 'PASS: '${tests[$t]} tests.out | wc -l`
+    score=`echo "scale=2; ($w ^ ($N - $passed) - $w ^ $N) / (1 - $w ^ $N) * ${points[$t]};" | bc`
+    echo "${tests[$t]}: passed $passed / $N times -- score: $score / ${points[$t]}"
+
+    totalscore=`echo "scale=2; $totalscore + $score;" | bc`
+    totalpoints=`echo "scale=2; $totalpoints + ${points[$t]};" | bc`
+done
+
+echo ""
+echo "Total score: $totalscore / $totalpoints"
+
+# echo '{
+#     "score": $totalscore,
+#     "visibility": "visible",
+#     "stdout_visibility": "visible"
+# }' > /autograder/results/results.json
