@@ -3,8 +3,11 @@ package raft
 // 14-736 Lab 2 Raft implementation in go
 
 import (
-	"../remote"
+	"encoding/gob"
+	"fmt"
+	"strconv"
 
+	"../remote"
 	// "fmt"
 	// "math/rand"
 	// "strconv"
@@ -22,12 +25,12 @@ type StatusReport struct {
 	CallCount int
 }
 
-type RaftPeers struct {
-	Lock  sync.RWMutex
-	peers []*Raft
+func Min(x int, y int) int {
+	if x <= y {
+		return x
+	}
+	return y
 }
-
-var rp RaftPeers
 
 // RaftInterface -- this is the "service interface" that is implemented by each Raft peer using the
 // remote library from Lab 1.  it supports five remote methods that you must define and implement.
@@ -56,8 +59,8 @@ var rp RaftPeers
 //     and reply back to the Controller with a StatusReport struct as defined above. it must be
 //     implemented as given, or the test code will not function correctly.  more detail below
 type RaftInterface struct {
-	RequestVote     func() (int, bool, remote.RemoteObjectError) // TODO: define function type
-	AppendEntries   func() (int, bool, remote.RemoteObjectError) // TODO: define function type
+	RequestVote     func(int, int, int, int) (int, bool, remote.RemoteObjectError)                    // TODO: define function type
+	AppendEntries   func(int, int, int, int, []LogCommand, int) (int, bool, remote.RemoteObjectError) // TODO: define function type
 	GetCommittedCmd func(int) (int, remote.RemoteObjectError)
 	GetStatus       func() (StatusReport, remote.RemoteObjectError)
 	NewCommand      func(int) (StatusReport, remote.RemoteObjectError)
@@ -84,7 +87,7 @@ type Raft struct {
 	RaftId        int
 	CurrentTerm   int
 	VotedFor      int
-	Log           []*LogCommand
+	Log           []LogCommand
 	CommitIndex   int
 	LastApplied   int
 	PeerNum       int
@@ -115,7 +118,7 @@ func NewRaftPeer(port int, id int, num int) *Raft { // TODO: <---- change the re
 		CurrentTerm:   0,
 		VotedFor:      -1,
 		PeerNum:       num,
-		Log:           make([]*LogCommand, 0),
+		Log:           make([]LogCommand, 0),
 		Lock:          sync.Mutex{},
 		State:         SLEEP,
 		RemoteService: nil,
@@ -132,31 +135,40 @@ func NewRaftPeer(port int, id int, num int) *Raft { // TODO: <---- change the re
 	// `id`, `port`, and `num` can determine the port number used by any other peer.
 	// gob.Register(RaftServiceInterface{})
 	// gob.Register(remote.RemoteObjectError{})
+	gob.Register(StatusReport{})
 	newRaft.RemoteService, _ = remote.NewService(&RaftInterface{}, newRaft, newRaft.Port, false, false)
+	err := remote.StubFactory(&newRaft.RemoteClient, strconv.Itoa(newRaft.Port), false, false)
+	if err != nil {
+		fmt.Println(err.Error())
+	}
 	return newRaft
 }
 
-// func (rf *Raft) Run() {
-// 	for {
-// 		if rf.State != ACTIIVE {
-// 			break
-// 		}
-// 		if rf.Status == FOLLOWER {
+func (rf *Raft) Run() {
+	for {
+		if rf.State != ACTIIVE {
+			break
+		}
+		if rf.Status == FOLLOWER {
 
-// 		} else if rf.Status == CANDIDATE {
+		} else if rf.Status == CANDIDATE {
 
-// 		} else {
+		} else {
 
-// 		}
-// 	}
-// }
+		}
+	}
+}
+
+func DoFollower(rf *Raft) {
+
+}
 
 func (rf *Raft) Activate() {
 	// obj := &RaftServiceInterface{}
 	// rf.RemoteService, _ = remote.NewService(&RaftInterface{}, obj, rf.Port, false, false)
 	rf.State = ACTIIVE
 	rf.RemoteService.Start()
-	// go rf.Run()
+	go rf.Run()
 }
 
 // `Activate` -- this method operates on your Raft peer struct and initiates functionality
@@ -206,13 +218,46 @@ func (rf *Raft) Deactivate() {
 // TODO: implement remote method calls from other Raft peers:
 //
 // RequestVote -- as described in the Raft paper, called by other Raft peers
-func (rf *Raft) RequestVote() (int, bool, remote.RemoteObjectError) {
-	return 0, false, remote.RemoteObjectError{}
+func (rf *Raft) RequestVote(term int, candID int, lastLogIdx int, lastLogTerm int) (int, bool, remote.RemoteObjectError) {
+	if term < rf.CurrentTerm {
+		return rf.CurrentTerm, false, remote.RemoteObjectError{}
+	}
+	// change the state to follower if the RPC call's term > rf.CurrentTerm
+	if term > rf.CurrentTerm {
+		rf.State = FOLLOWER
+		rf.CurrentTerm = term
+		rf.VotedFor = -1
+	}
+	// based on First Come First Vote principle, server will grant vote
+	if lastLogTerm > rf.Log[len(rf.Log)-1].Term || (lastLogIdx == len(rf.Log)-1 && lastLogTerm == rf.Log[len(rf.Log)-1].Term) {
+		if rf.VotedFor == candID || rf.VotedFor == -1 {
+			rf.VotedFor = candID
+			return term, true, remote.RemoteObjectError{}
+		}
+	}
+
+	return term, false, remote.RemoteObjectError{}
 }
 
 // AppendEntries -- as described in the Raft paper, called by other Raft peers
-func (rf *Raft) AppendEntries() (int, bool, remote.RemoteObjectError) {
-	return 0, false, remote.RemoteObjectError{}
+func (rf *Raft) AppendEntries(term int, leadId int, prevLogIdx int, prevLogTerm int, logEntries []LogCommand, leadComitIdx int) (int, bool, remote.RemoteObjectError) {
+	if term < rf.CurrentTerm {
+		return rf.CurrentTerm, false, remote.RemoteObjectError{}
+	}
+	if len(rf.Log)-1 < prevLogIdx || rf.Log[prevLogIdx].Term != prevLogTerm {
+		return term, false, remote.RemoteObjectError{}
+	}
+	// passed the log term check append logs
+	rf.Log = rf.Log[:prevLogIdx+1]
+	for i := 0; i < len(logEntries); i++ {
+		rf.Log = append(rf.Log, logEntries[i])
+	}
+	// check if leadComitIdx > rf.CommitIndex, if so, set min(leaderCommit, index of last new entry)
+	if leadComitIdx > rf.CommitIndex {
+		toComit := Min(leadComitIdx, len(rf.Log)-1)
+		rf.CommitIndex = toComit
+	}
+	return term, true, remote.RemoteObjectError{}
 }
 
 // GetCommittedCmd -- called (only) by the Controller.  this method provides an input argument
