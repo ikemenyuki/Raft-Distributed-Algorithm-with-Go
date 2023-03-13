@@ -8,11 +8,12 @@ import (
 	"strconv"
 
 	"../remote"
+
 	// "fmt"
 	// "math/rand"
 	// "strconv"
 	"sync"
-	// "time"
+	"time"
 )
 
 // StatusReport struct sent from Raft node to Controller in response to command and status requests.
@@ -70,6 +71,7 @@ type RaftInterface struct {
 // explain the current status of each Raft peer.  it doesn't matter what you call this struct,
 // and the test code doesn't really care what state it contains, so this part is up to you.
 // TODO: define a struct to maintain the local state of a single Raft peer
+const TIMEOUT = 300
 const (
 	FOLLOWER  int = 0
 	CANDIDATE int = 1
@@ -79,6 +81,11 @@ const (
 const (
 	SLEEP   = 0
 	ACTIIVE = 1
+)
+
+const (
+	HEARTBEAT = 0
+	APPENDLOG = 1
 )
 
 type Raft struct {
@@ -94,8 +101,14 @@ type Raft struct {
 	RemoteService *remote.Service
 	State         int // Whether the server is activated or deactived
 	Status        int // Status is one of FOLLOWER, CANDIDATE, or LEADER
-	RemoteClient  *RaftInterface
+	RemoteClients []*RaftInterface
 	Leader        int
+	HeartBeat     chan bool
+	Voted         chan bool
+	VoteCount     int
+	nextIdx       []int
+	Won           chan bool
+	// AppliedEntry chan []LogCommand
 }
 
 type LogCommand struct {
@@ -123,6 +136,11 @@ func NewRaftPeer(port int, id int, num int) *Raft { // TODO: <---- change the re
 		State:         SLEEP,
 		RemoteService: nil,
 		Status:        FOLLOWER,
+		HeartBeat:     make(chan bool),
+		Voted:         make(chan bool),
+		VoteCount:     0,
+		Won:           make(chan bool),
+		Leader:        -1,
 	}
 	// when a new raft peer is created, its initial state should be populated into the corresponding
 	// struct entries, and its `remote.Service` and `remote.StubFactory` components should be created,
@@ -137,7 +155,7 @@ func NewRaftPeer(port int, id int, num int) *Raft { // TODO: <---- change the re
 	// gob.Register(remote.RemoteObjectError{})
 	gob.Register(StatusReport{})
 	newRaft.RemoteService, _ = remote.NewService(&RaftInterface{}, newRaft, newRaft.Port, false, false)
-	err := remote.StubFactory(&newRaft.RemoteClient, strconv.Itoa(newRaft.Port), false, false)
+	err := remote.StubFactory(&newRaft.RemoteClients[id], strconv.Itoa(newRaft.Port), false, false)
 	if err != nil {
 		fmt.Println(err.Error())
 	}
@@ -150,17 +168,121 @@ func (rf *Raft) Run() {
 			break
 		}
 		if rf.Status == FOLLOWER {
-
+			// using select statement, we are blocked until of of the channel is ready.
+			select {
+			case <-rf.Voted:
+			case <-rf.HeartBeat:
+			case <-time.After(time.Millisecond * time.Duration(TIMEOUT)):
+				// vote for it self first
+				rf.VotedFor = rf.RaftId
+				rf.Status = CANDIDATE
+				rf.Leader = -1
+			}
 		} else if rf.Status == CANDIDATE {
-
+			// we should send RequestVote RPC call to all peers and handle the feedbacks
+			rf.BroadcastRequest()
+			select {
+			case <-rf.HeartBeat:
+			case <-time.After(time.Millisecond * time.Duration(TIMEOUT)):
+			case <-rf.Won:
+				// won the election, and send heartbeat message to everyone to establish its authority
+				rf.Status = LEADER
+				rf.Leader = rf.RaftId
+				rf.HeartBeat <- false
+				rf.Voted <- false
+				rf.VoteCount = 0
+				// initialize nextIdx of the
+			}
 		} else {
 
 		}
 	}
 }
 
-func DoFollower(rf *Raft) {
+func (rf *Raft) BroadcastRequest() {
+	if rf.Status != CANDIDATE {
+		return
+	}
 
+	for i := range rf.RemoteClients {
+		if i != rf.RaftId {
+			go rf.SendRequest(i)
+		}
+	}
+}
+
+func (rf *Raft) SendRequest(i int) {
+	rf.Lock.Lock()
+	defer rf.Lock.Unlock()
+
+	lastLogIdx := len(rf.Log) - 1
+	lastLogTerm := rf.Log[lastLogIdx].Term
+	retTerm, voted, err := rf.RemoteClients[i].RequestVote(rf.CurrentTerm, rf.RaftId, lastLogIdx, lastLogTerm)
+	if err.Err != "" {
+		fmt.Println(err.Error())
+	}
+	if retTerm > rf.CurrentTerm {
+		//degrade itself to FOLLOWER Status
+		rf.ResetChannel()
+		rf.Status = FOLLOWER
+	}
+	if voted {
+		rf.VoteCount += 1
+	}
+	if rf.VoteCount >= rf.PeerNum/2 {
+		rf.Won <- true
+
+	}
+
+}
+
+func (rf *Raft) BoardcastAppend(bdType int) {
+	if rf.Status != LEADER {
+		return
+	}
+	for i := range rf.RemoteClients {
+		go rf.SendAppend(i, bdType)
+	}
+}
+
+func (rf *Raft) SendAppend(i int, bdType int) {
+	rf.Lock.Lock()
+	defer rf.Lock.Unlock()
+	if rf.Status != LEADER {
+		return
+	}
+
+	if i != rf.RaftId {
+		prevLogIdx := rf.nextIdx[i]
+		prevLogTerm := rf.Log[prevLogIdx].Term
+		var logEntries []LogCommand = make([]LogCommand, 0)
+		if bdType == APPENDLOG {
+			logEntries = rf.Log[prevLogIdx:]
+		}
+		term, result, err := rf.RemoteClients[i].AppendEntries(rf.CurrentTerm, rf.RaftId, prevLogIdx, prevLogTerm, logEntries, rf.CommitIndex)
+		if err.Err != "" {
+			fmt.Println(err.Error())
+			return
+		}
+		if !result {
+			if term > rf.CurrentTerm {
+				// the leader will step down as a FOLLOWER
+				rf.Leader = -1
+				rf.Status = FOLLOWER
+				rf.ResetChannel()
+			} else {
+				// the peers need to be updated
+				rf.nextIdx[i] -= 1
+			}
+		}
+
+	}
+}
+
+func (rf *Raft) ResetChannel() {
+	rf.HeartBeat = make(chan bool)
+	rf.Voted = make(chan bool)
+	rf.Won = make(chan bool)
 }
 
 func (rf *Raft) Activate() {
@@ -224,7 +346,7 @@ func (rf *Raft) RequestVote(term int, candID int, lastLogIdx int, lastLogTerm in
 	}
 	// change the state to follower if the RPC call's term > rf.CurrentTerm
 	if term > rf.CurrentTerm {
-		rf.State = FOLLOWER
+		rf.Status = FOLLOWER
 		rf.CurrentTerm = term
 		rf.VotedFor = -1
 	}
@@ -232,6 +354,7 @@ func (rf *Raft) RequestVote(term int, candID int, lastLogIdx int, lastLogTerm in
 	if lastLogTerm > rf.Log[len(rf.Log)-1].Term || (lastLogIdx == len(rf.Log)-1 && lastLogTerm == rf.Log[len(rf.Log)-1].Term) {
 		if rf.VotedFor == candID || rf.VotedFor == -1 {
 			rf.VotedFor = candID
+			rf.Voted <- true
 			return term, true, remote.RemoteObjectError{}
 		}
 	}
@@ -244,6 +367,7 @@ func (rf *Raft) AppendEntries(term int, leadId int, prevLogIdx int, prevLogTerm 
 	if term < rf.CurrentTerm {
 		return rf.CurrentTerm, false, remote.RemoteObjectError{}
 	}
+	rf.HeartBeat <- true
 	if len(rf.Log)-1 < prevLogIdx || rf.Log[prevLogIdx].Term != prevLogTerm {
 		return term, false, remote.RemoteObjectError{}
 	}
@@ -259,6 +383,13 @@ func (rf *Raft) AppendEntries(term int, leadId int, prevLogIdx int, prevLogTerm 
 	}
 	return term, true, remote.RemoteObjectError{}
 }
+
+// // function to handle commit
+// func (rf *Raft) GoCommit() {
+//     rf.Lock.Lock()
+//     defer rf.Lock.Unlock()
+
+// }
 
 // GetCommittedCmd -- called (only) by the Controller.  this method provides an input argument
 // `index`.  if the Raft peer has a log entry at the given `index`, and that log entry has been
