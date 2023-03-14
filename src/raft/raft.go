@@ -10,11 +10,17 @@ import (
 	"../remote"
 
 	// "fmt"
-	// "math/rand"
+	"math/rand"
 	// "strconv"
 	"sync"
 	"time"
 )
+
+func init() {
+	gob.Register([]LogCommand{})
+	gob.Register(LogCommand{})
+	gob.Register(StatusReport{})
+}
 
 // StatusReport struct sent from Raft node to Controller in response to command and status requests.
 // this is needed by the Controller, so do not change it. make sure you give it to the Controller
@@ -72,6 +78,7 @@ type RaftInterface struct {
 // and the test code doesn't really care what state it contains, so this part is up to you.
 // TODO: define a struct to maintain the local state of a single Raft peer
 const TIMEOUT = 300
+const addr string = "localhost:"
 const (
 	FOLLOWER  int = 0
 	CANDIDATE int = 1
@@ -81,11 +88,6 @@ const (
 const (
 	SLEEP   = 0
 	ACTIIVE = 1
-)
-
-const (
-	HEARTBEAT = 0
-	APPENDLOG = 1
 )
 
 type Raft struct {
@@ -101,18 +103,19 @@ type Raft struct {
 	RemoteService *remote.Service
 	State         int // Whether the server is activated or deactived
 	Status        int // Status is one of FOLLOWER, CANDIDATE, or LEADER
-	RemoteClients []*RaftInterface
+	RemoteClients []RaftInterface
 	Leader        int
 	HeartBeat     chan bool
 	Voted         chan bool
 	VoteCount     int
-	nextIdx       []int
+	NextIdx       []int
 	Won           chan bool
+	MatchIdx      []int
 	// AppliedEntry chan []LogCommand
 }
 
 type LogCommand struct {
-	Command string
+	Command int
 	Term    int
 }
 
@@ -141,6 +144,8 @@ func NewRaftPeer(port int, id int, num int) *Raft { // TODO: <---- change the re
 		VoteCount:     0,
 		Won:           make(chan bool),
 		Leader:        -1,
+		MatchIdx:      make([]int, 0),
+		RemoteClients: make([]RaftInterface, num),
 	}
 	// when a new raft peer is created, its initial state should be populated into the corresponding
 	// struct entries, and its `remote.Service` and `remote.StubFactory` components should be created,
@@ -155,9 +160,20 @@ func NewRaftPeer(port int, id int, num int) *Raft { // TODO: <---- change the re
 	// gob.Register(remote.RemoteObjectError{})
 	gob.Register(StatusReport{})
 	newRaft.RemoteService, _ = remote.NewService(&RaftInterface{}, newRaft, newRaft.Port, false, false)
-	err := remote.StubFactory(&newRaft.RemoteClients[id], strconv.Itoa(newRaft.Port), false, false)
-	if err != nil {
-		fmt.Println(err.Error())
+	basePort := port - id
+	for i := 0; i < num; i++ {
+		if i == id {
+			continue
+		}
+		stub := &newRaft.RemoteClients[i]
+		err := remote.StubFactory(stub, addr+strconv.Itoa(basePort+i), false, false)
+		if err != nil {
+			fmt.Println(err.Error())
+		}
+	}
+	for j := 0; j < num; j++ {
+		newRaft.NextIdx = append(newRaft.NextIdx, 0)
+		newRaft.MatchIdx = append(newRaft.MatchIdx, 0)
 	}
 	return newRaft
 }
@@ -172,29 +188,54 @@ func (rf *Raft) Run() {
 			select {
 			case <-rf.Voted:
 			case <-rf.HeartBeat:
-			case <-time.After(time.Millisecond * time.Duration(TIMEOUT)):
+			case <-time.After(time.Millisecond * time.Duration(TIMEOUT+rand.Intn(250))):
+				rf.Lock.Lock()
 				// vote for it self first
 				rf.VotedFor = rf.RaftId
 				rf.Status = CANDIDATE
 				rf.Leader = -1
+				rf.VoteCount = 1
+				rf.Lock.Unlock()
 			}
 		} else if rf.Status == CANDIDATE {
 			// we should send RequestVote RPC call to all peers and handle the feedbacks
 			rf.BroadcastRequest()
 			select {
 			case <-rf.HeartBeat:
-			case <-time.After(time.Millisecond * time.Duration(TIMEOUT)):
+			case <-time.After(time.Millisecond * time.Duration(TIMEOUT+rand.Intn(250))):
 			case <-rf.Won:
 				// won the election, and send heartbeat message to everyone to establish its authority
+				rf.Lock.Lock()
+				rf.CurrentTerm += 1
+				fmt.Printf("%d is the new Leader in term %d\n", rf.RaftId, rf.CurrentTerm)
 				rf.Status = LEADER
 				rf.Leader = rf.RaftId
-				rf.HeartBeat <- false
-				rf.Voted <- false
 				rf.VoteCount = 0
-				// initialize nextIdx of the
+				rf.ResetChannel()
+				rf.Lock.Unlock()
 			}
 		} else {
-
+			rf.BoardcastAppend()
+			if rf.Status != LEADER {
+				continue
+			}
+			// If there exists an N such that N > commitIndex, a majority
+			// of matchIndex[i] ≥ N, and log[N].term == currentTerm:
+			// set commitIndex = N
+			for N := len(rf.Log) - 1; N > rf.CommitIndex; N-- {
+				count := 0
+				if rf.Log[N].Term == rf.CurrentTerm {
+					for j := range rf.MatchIdx {
+						if rf.MatchIdx[j] >= N {
+							count++
+						}
+					}
+				}
+				if count > rf.PeerNum/2 {
+					rf.CommitIndex = N
+					break
+				}
+			}
 		}
 	}
 }
@@ -216,7 +257,15 @@ func (rf *Raft) SendRequest(i int) {
 	defer rf.Lock.Unlock()
 
 	lastLogIdx := len(rf.Log) - 1
-	lastLogTerm := rf.Log[lastLogIdx].Term
+	var lastLogTerm int
+	if lastLogIdx < 0 {
+		// initial election
+		lastLogIdx = 0
+		lastLogTerm = 0
+	} else {
+		lastLogTerm = rf.Log[lastLogIdx].Term
+	}
+
 	retTerm, voted, err := rf.RemoteClients[i].RequestVote(rf.CurrentTerm, rf.RaftId, lastLogIdx, lastLogTerm)
 	if err.Err != "" {
 		fmt.Println(err.Error())
@@ -229,23 +278,23 @@ func (rf *Raft) SendRequest(i int) {
 	if voted {
 		rf.VoteCount += 1
 	}
-	if rf.VoteCount >= rf.PeerNum/2 {
+	if rf.VoteCount > rf.PeerNum/2 {
 		rf.Won <- true
 
 	}
 
 }
 
-func (rf *Raft) BoardcastAppend(bdType int) {
+func (rf *Raft) BoardcastAppend() {
 	if rf.Status != LEADER {
 		return
 	}
 	for i := range rf.RemoteClients {
-		go rf.SendAppend(i, bdType)
+		go rf.SendAppend(i)
 	}
 }
 
-func (rf *Raft) SendAppend(i int, bdType int) {
+func (rf *Raft) SendAppend(i int) {
 	rf.Lock.Lock()
 	defer rf.Lock.Unlock()
 	if rf.Status != LEADER {
@@ -253,12 +302,16 @@ func (rf *Raft) SendAppend(i int, bdType int) {
 	}
 
 	if i != rf.RaftId {
-		prevLogIdx := rf.nextIdx[i]
-		prevLogTerm := rf.Log[prevLogIdx].Term
-		var logEntries []LogCommand = make([]LogCommand, 0)
-		if bdType == APPENDLOG {
-			logEntries = rf.Log[prevLogIdx:]
+		var prevLogIdx int
+		var prevLogTerm int
+		prevLogIdx = rf.NextIdx[i]
+		if len(rf.Log) == 0 {
+			prevLogTerm = 0
+		} else {
+			prevLogTerm = rf.Log[prevLogIdx].Term
 		}
+		var logEntries []LogCommand = make([]LogCommand, 0)
+		logEntries = rf.Log[prevLogIdx:]
 		term, result, err := rf.RemoteClients[i].AppendEntries(rf.CurrentTerm, rf.RaftId, prevLogIdx, prevLogTerm, logEntries, rf.CommitIndex)
 		if err.Err != "" {
 			fmt.Println(err.Error())
@@ -272,8 +325,18 @@ func (rf *Raft) SendAppend(i int, bdType int) {
 				rf.ResetChannel()
 			} else {
 				// the peers need to be updated
-				rf.nextIdx[i] -= 1
+				rf.NextIdx[i] -= 1
+				if rf.NextIdx[i] < rf.MatchIdx[i] {
+					fmt.Println("There is a bug, nextidx should be always greater than matchidx")
+					return
+				}
 			}
+		} else {
+			// The peer has successfully replicated the log
+			// should update the match index and the next index
+			newMatch := prevLogIdx + len(logEntries)
+			rf.MatchIdx[i] = newMatch
+			rf.NextIdx[i] = newMatch + 1
 		}
 
 	}
@@ -349,25 +412,57 @@ func (rf *Raft) RequestVote(term int, candID int, lastLogIdx int, lastLogTerm in
 		rf.Status = FOLLOWER
 		rf.CurrentTerm = term
 		rf.VotedFor = -1
+		rf.ResetChannel()
 	}
 	// based on First Come First Vote principle, server will grant vote
-	if lastLogTerm > rf.Log[len(rf.Log)-1].Term || (lastLogIdx == len(rf.Log)-1 && lastLogTerm == rf.Log[len(rf.Log)-1].Term) {
-		if rf.VotedFor == candID || rf.VotedFor == -1 {
+	if len(rf.Log) == 0 {
+		if rf.VotedFor < 0 || rf.VotedFor == candID {
+			rf.VotedFor = candID
+			rf.Voted <- true
+			fmt.Printf("Raft Node %d grants vote to candidate %d \n", rf.RaftId, candID)
+			return term, true, remote.RemoteObjectError{}
+		}
+	} else {
+		isUpdated := rf.Check(lastLogIdx, lastLogTerm)
+		if (rf.VotedFor < 0 || rf.VotedFor == candID) && isUpdated {
+			fmt.Printf("Raft Node %d grants vote to candidate %d \n", rf.RaftId, candID)
 			rf.VotedFor = candID
 			rf.Voted <- true
 			return term, true, remote.RemoteObjectError{}
+
 		}
 	}
-
+	fmt.Printf("Raft Node %d does not grant vote to candidate %d \n", rf.RaftId, candID)
 	return term, false, remote.RemoteObjectError{}
+}
+
+func (rf *Raft) Check(idx int, term int) bool {
+	lastIdx := len(rf.Log) - 1
+	lastTerm := rf.Log[lastIdx].Term
+	if term > lastTerm {
+		return true
+	} else if term == lastTerm {
+		return idx > lastIdx
+	}
+	return false
 }
 
 // AppendEntries -- as described in the Raft paper, called by other Raft peers
 func (rf *Raft) AppendEntries(term int, leadId int, prevLogIdx int, prevLogTerm int, logEntries []LogCommand, leadComitIdx int) (int, bool, remote.RemoteObjectError) {
+	rf.Lock.Lock()
+	defer rf.Lock.Unlock()
+
 	if term < rf.CurrentTerm {
 		return rf.CurrentTerm, false, remote.RemoteObjectError{}
 	}
 	rf.HeartBeat <- true
+	if term > rf.CurrentTerm {
+		rf.Status = FOLLOWER
+		rf.CurrentTerm = term
+		rf.VotedFor = -1
+		rf.ResetChannel()
+	}
+	rf.Leader = leadId
 	if len(rf.Log)-1 < prevLogIdx || rf.Log[prevLogIdx].Term != prevLogTerm {
 		return term, false, remote.RemoteObjectError{}
 	}
@@ -396,8 +491,21 @@ func (rf *Raft) AppendEntries(term int, leadId int, prevLogIdx int, prevLogTerm 
 // committed (per the Raft algorithm), then the command stored in the log entry should be returned
 // to the Controller.  otherwise, the Raft peer should return the value 0, which is not a valid
 // command number and indicates that no committed log entry exists at that index
-func (rf *Raft) GetCommittedCmd(int) (int, remote.RemoteObjectError) {
-	return 0, remote.RemoteObjectError{}
+func (rf *Raft) GetCommittedCmd(index int) (int, remote.RemoteObjectError) {
+	// Check if the given index is within the range of the Log slice
+	if index < 0 || index >= len(rf.Log) {
+		err := remote.RemoteObjectError{Err: "index out of range"}
+		return 0, err
+	}
+
+	// Check if the corresponding log entry has been committed
+	if rf.CommitIndex >= index {
+		// Return the command stored in the log entry
+		return rf.Log[index].Command, remote.RemoteObjectError{}
+	} else {
+		// The log entry has not been committed
+		return 0, remote.RemoteObjectError{Err: "log entry not committed"}
+	}
 }
 
 // GetStatus -- called (only) by the Controller.  this method takes no arguments and is essentially
@@ -405,15 +513,64 @@ func (rf *Raft) GetCommittedCmd(int) (int, remote.RemoteObjectError) {
 // log index, role in the Raft algorithm, and total number of remote calls handled since starting.
 // the method returns a `StatusReport` struct as defined at the top of this file.
 func (rf *Raft) GetStatus() (StatusReport, remote.RemoteObjectError) {
-	return StatusReport{}, remote.RemoteObjectError{}
+	// get the remote service of raft peer
+	serv := rf.RemoteService
+
+	// return the StatusReport
+	report := StatusReport{
+		Term:      rf.CurrentTerm,
+		Index:     len(rf.Log) - 1,
+		Leader:    rf.Status == LEADER,
+		CallCount: serv.GetCount(),
+	}
+	return report, remote.RemoteObjectError{}
 }
 
 // NewCommand -- called (only) by the Controller.  this method emulates submission of a new command
 // by a Raft client to this Raft peer, which should be handled and processed according to the rules
 // of the Raft algorithm.  once handled, the Raft peer should return a `StatusReport` struct with
 // the updated status after the new command was handled.
-func (rf *Raft) NewCommand(int) (StatusReport, remote.RemoteObjectError) {
-	return StatusReport{}, remote.RemoteObjectError{}
+func (rf *Raft) NewCommand(command int) (StatusReport, remote.RemoteObjectError) {
+	// check if the callee raft peer is the leader
+	if rf.Status != LEADER {
+		roe := remote.RemoteObjectError{
+			Err: "Not the Leader",
+		}
+		return StatusReport{}, roe
+	}
+
+	// broadcast logEntries to all raft peers
+	logEntry := LogCommand{
+		Term:    rf.CurrentTerm,
+		Command: command,
+	}
+	rf.Log = append(rf.Log, logEntry)
+	return rf.GetStatus()
+	// curCmdIdx := len(rf.Log) - 1
+
+	// // go routine to detect if CommitIndex is greater than or equal to the current appended log index
+	// doneCh := make(chan struct{})
+	// go func() {
+	//     for {
+	//         if rf.CommitIndex >= curCmdIdx {
+	//             close(doneCh)
+	//             return
+	//         }
+	//         time.Sleep(10 * time.Millisecond)
+	//     }
+	// }()
+
+	// // Wait for the doneCh to be closed or for a timeout
+	// select {
+	// case <-doneCh:
+	//     return rf.GetStatus()
+	// case <-time.After(500 * time.Millisecond):
+	//     roe := remote.RemoteObjectError{
+	//         Err: "time out",
+	//     }
+	//     return StatusReport{}, roe
+	// }
+
 }
 
 // general notes:

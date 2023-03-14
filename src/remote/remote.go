@@ -236,6 +236,8 @@ type Service struct {
 	runningMu  sync.Mutex
 	running    bool
 	ln         net.Listener
+	count      int
+	countMu    sync.Mutex
 	//       - status and configuration parameters, as needed
 }
 
@@ -304,6 +306,8 @@ func NewService(ifc interface{}, sobj interface{}, port int, lossy bool, delayed
 		delayed:    delayed,
 		runningMu:  sync.Mutex{},
 		running:    false,
+		count:      0,
+		countMu:    sync.Mutex{},
 	}
 
 	return s, nil
@@ -351,7 +355,6 @@ func (serv *Service) Serve(conn net.Conn) {
 		errBool = true
 		errStr = "invalid or mismatched interface"
 	}
-	fmt.Println(field.Name)
 	method := serv.objValue.MethodByName(field.Name)
 	// Check the length of the request arguments
 	if !errBool && len(req.Args) != method.Type().NumIn() {
@@ -412,6 +415,9 @@ func (serv *Service) Serve(conn net.Conn) {
 			break
 		}
 	}
+	serv.countMu.Lock()
+	defer serv.countMu.Unlock()
+	serv.count += 1
 	conn.Close()
 }
 
@@ -471,12 +477,12 @@ func (serv *Service) Start() error {
 }
 
 // get the total number of remote calls served successfully by this Service
-// func (serv *Service) GetCount() int {
-// 	// TODO: return the total number of remote calls served successfully by this Service
-// 	serv.countMu.Lock()
-// 	defer serv.countMu.Unlock()
-// 	return serv.count
-// }
+func (serv *Service) GetCount() int {
+	// TODO: return the total number of remote calls served successfully by this Service
+	serv.countMu.Lock()
+	defer serv.countMu.Unlock()
+	return serv.count
+}
 
 // return a boolean value indicating whether the Service is running
 func (serv *Service) IsRunning() bool {

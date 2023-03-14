@@ -3,7 +3,7 @@
 
 # folder name of the package of interest
 PKGNAME = raft
-MKARGS = "-timeout 3600s"
+MKARGS = -timeout 3600s
 
 .PHONY: build test test-race checkpoint checkpoint-race clean docs
 .SILENT: build test test-race checkpoint checkpoint-race clean docs
