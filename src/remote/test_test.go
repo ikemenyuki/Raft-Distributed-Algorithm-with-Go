@@ -510,3 +510,105 @@ func TestFinal_Mismatch(t *testing.T) {
 		t.Fatalf("Service accepted incorrect argument type from Stub")
 	}
 }
+
+// TestFinal_Reconnection -- tests connection and use, disconnection,
+// reconnection and use, another disconnection, another reconnection and use.
+func TestFinal_Reconnection(t *testing.T) {
+
+	// choose a large-ish random port number for each test
+	port := rand.Intn(10000) + 7000
+	addr := "127.0.0.1:" + strconv.Itoa(port)
+
+	// create the service, should work if the previous tests passed
+	srvc, err := NewService(&SimpleInterface{}, &SimpleObject{}, port, false, false)
+	if err != nil {
+		t.Fatalf("Error in NewService: %s", err.Error())
+	}
+	if srvc == nil {
+		t.Fatalf("NewService returned nil service")
+	}
+
+	// create the stub, should work if previous tests passed
+	stub := &SimpleInterface{}
+	err = StubFactory(stub, addr, false, false)
+	if err != nil {
+		t.Fatalf("StubFactory failed to create service proxy from interface")
+	}
+
+	err = srvc.Start()
+	if err != nil {
+		t.Fatalf("Error in Service.start(): %s", err.Error())
+	}
+
+	// wait for service to start...or timeout
+	ddln := time.Now().Add(time.Second)
+	for !srvc.IsRunning() && time.Now().Before(ddln) {
+	}
+	if !srvc.IsRunning() {
+		t.Fatalf("Timeout waiting for Service to start")
+	}
+
+	// Attempt to get a value from the stub.
+	i, e, r := stub.Method(1, false)
+	if i != 1 || e != "" || r.Error() != "" {
+		t.Fatalf("Stub returned an incorrect result for argument false")
+	}
+
+	srvc.Stop()
+
+	// make a call that should fail because the service stopped.
+	i, e, r = stub.Method(1, false)
+	if r.Error() == "" {
+		t.Fatalf("Call to stopped service didn't return an error")
+	}
+
+	time.Sleep(time.Second) // take a little nap then restart service
+	err = srvc.Start()
+	if err != nil {
+		t.Fatalf("Error in Service.start() 2nd time: %s", err.Error())
+	}
+
+	// wait for service to start...or timeout
+	ddln = time.Now().Add(time.Second)
+	for !srvc.IsRunning() && time.Now().Before(ddln) {
+	}
+	if !srvc.IsRunning() {
+		t.Fatalf("Timeout waiting for Service to start 2nd time")
+	}
+
+	// Attempt to get a value from the stub.
+	i, e, r = stub.Method(1, false)
+	if i != 1 || e != "" || r.Error() != "" {
+		t.Fatalf("Stub returned an incorrect result for argument false")
+	}
+
+	srvc.Stop()
+
+	// make a call that should fail because the service stopped.
+	i, e, r = stub.Method(1, false)
+	if r.Error() == "" {
+		t.Fatalf("Call to stopped service didn't return an error")
+	}
+
+	time.Sleep(time.Second) // take a little nap then restart service
+	err = srvc.Start()
+	if err != nil {
+		t.Fatalf("Error in Service.start() 3rd time: %s", err.Error())
+	}
+
+	// wait for service to start...or timeout
+	ddln = time.Now().Add(time.Second)
+	for !srvc.IsRunning() && time.Now().Before(ddln) {
+	}
+	if !srvc.IsRunning() {
+		t.Fatalf("Timeout waiting for Service to start 3rd time")
+	}
+
+	// Attempt to get a value from the stub.
+	i, e, r = stub.Method(1, false)
+	if i != 1 || e != "" || r.Error() != "" {
+		t.Fatalf("Stub returned an incorrect result for argument false")
+	}
+
+	srvc.Stop()
+}

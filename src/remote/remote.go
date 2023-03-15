@@ -315,13 +315,13 @@ func NewService(ifc interface{}, sobj interface{}, port int, lossy bool, delayed
 
 func (serv *Service) HandleClients() {
 	for {
-		conn, err := serv.ln.Accept()
 		serv.runningMu.Lock()
-		if !serv.running {
-			serv.runningMu.Unlock()
+		running := serv.running
+		serv.runningMu.Unlock()
+		if !running {
 			return
 		}
-		serv.runningMu.Unlock()
+		conn, err := serv.ln.Accept()
 		if err != nil {
 			return
 		}
@@ -550,6 +550,8 @@ func StubFactory(ifc interface{}, adr string, lossy bool, delayed bool) error {
 		return fmt.Errorf("ifc is not a remote interface")
 	}
 
+	// check if the service interface is closed
+
 	// get the reflect.Type of the interface
 	ifcType := reflect.TypeOf(ifc).Elem()
 
@@ -561,93 +563,101 @@ func StubFactory(ifc interface{}, adr string, lossy bool, delayed bool) error {
 		methodType := ifcType.Field(i)
 		methodValue := stubValue.Elem().FieldByName(methodType.Name)
 		reqType := ifcType.Field(i).Type
+		// wait for a reply message using the leaky socket
+		methodType_type := reqType
+		var reply ReplyMsg
 		// make a new function called newFunc
 		newFunc := func(args []reflect.Value) (results []reflect.Value) {
 			gob.Register(RemoteObjectError{})
-
-			conn, err := net.Dial("tcp", adr)
-			if err != nil {
-				fmt.Println(err)
-			}
-			// wrap the connection in a leaky socket
-			ls := NewLeakySocket(conn, lossy, delayed)
-
-			// create a slice to hold the arguments
-			argVals := make([]interface{}, 0, len(args))
-			// iterate over the reflect.Value arguments and get their values
-			for _, arg := range args {
-				argVals = append(argVals, arg.Interface())
-			}
-			// create a request message with the method name and arguments
-			reqMsg := RequestMsg{
-				Method: methodType.Name,
-				Args:   argVals,
-			}
-			// encode the message into a byte string
-			var buf bytes.Buffer
-			enc := gob.NewEncoder(&buf)
-			err = enc.Encode(reqMsg)
-			if err != nil {
-				fmt.Println(err)
-			}
-			// send the message using the leaky socket
-			for {
-				ok, _ := ls.SendObject(buf.Bytes())
-				if ok {
-					break
-				}
-			}
-			// wait for a reply message using the leaky socket
-			methodType_type := reqType
-			var repData []byte
-			repData, err = ls.RecvObject()
-			if err != nil {
-				fmt.Println(err)
-			}
-			// decode the reply message into the expected return type
-			decoder := gob.NewDecoder(bytes.NewReader(repData))
-			var reply ReplyMsg
-			err = decoder.Decode(&reply)
-			if err != nil {
-				fmt.Println(err)
-			}
-
-			var resVals []reflect.Value
-			// append result from service to the returned
-			for j := 0; j < len(reply.Reply); j++ {
-				resVals = append(resVals, reflect.ValueOf(reply.Reply[j]))
-			}
 			// res checking
 			hasError := false
-			// check if received a success message from the service
-			if reply.Success {
-				// check if the reply nums are the same
-				if methodType_type.NumOut() != len(resVals) {
-					reply.Err.Err = "result length does not match"
-					hasError = true
-				}
+			hassConn := true
+			conn, err := net.Dial("tcp", adr)
+			if err != nil {
+				// fmt.Println(err)
+				hasError = true
+				hassConn = false
+			}
+			if !hasError {
+				// wrap the connection in a leaky socket
+				ls := NewLeakySocket(conn, lossy, delayed)
 
-				// check if return types matched with expected outputs
-				if !hasError {
-					for j := 0; j < methodType_type.NumOut(); j++ {
-						if methodType_type.Out(j) != resVals[j].Type() {
-							reply.Err.Err = "result type does not match"
-							hasError = false
-							break
-						}
+				// create a slice to hold the arguments
+				argVals := make([]interface{}, 0, len(args))
+				// iterate over the reflect.Value arguments and get their values
+				for _, arg := range args {
+					argVals = append(argVals, arg.Interface())
+				}
+				// create a request message with the method name and arguments
+				reqMsg := RequestMsg{
+					Method: methodType.Name,
+					Args:   argVals,
+				}
+				// encode the message into a byte string
+				var buf bytes.Buffer
+				enc := gob.NewEncoder(&buf)
+				err = enc.Encode(reqMsg)
+				if err != nil {
+					fmt.Println(err)
+				}
+				// send the message using the leaky socket
+				for {
+					ok, _ := ls.SendObject(buf.Bytes())
+					if ok {
+						break
 					}
 				}
-				if !hasError {
-					conn.Close()
-					return resVals
+				var repData []byte
+				repData, err = ls.RecvObject()
+				if err != nil {
+					fmt.Println(err)
+				}
+				// decode the reply message into the expected return type
+				decoder := gob.NewDecoder(bytes.NewReader(repData))
+				err = decoder.Decode(&reply)
+				if err != nil {
+					fmt.Println(err)
+				}
+
+				var resVals []reflect.Value
+				// append result from service to the returned
+				for j := 0; j < len(reply.Reply); j++ {
+					resVals = append(resVals, reflect.ValueOf(reply.Reply[j]))
+				}
+				// check if received a success message from the service
+				if reply.Success {
+					// check if the reply nums are the same
+					if methodType_type.NumOut() != len(resVals) {
+						reply.Err.Err = "result length does not match"
+						hasError = true
+					}
+
+					// check if return types matched with expected outputs
+					if !hasError {
+						for j := 0; j < methodType_type.NumOut(); j++ {
+							if methodType_type.Out(j) != resVals[j].Type() {
+								reply.Err.Err = "result type does not match"
+								hasError = false
+								break
+							}
+						}
+					}
+					if !hasError {
+						conn.Close()
+						return resVals
+					}
 				}
 			}
+
 			ErrVals := []reflect.Value{}
 			for k := 0; k < methodType_type.NumOut()-1; k++ {
 				ErrVals = append(ErrVals, reflect.Zero(methodType_type.Out(k)))
 			}
-			ErrVals = append(ErrVals, reflect.ValueOf(reply.Err))
-			conn.Close()
+			if hassConn {
+				conn.Close()
+				ErrVals = append(ErrVals, reflect.ValueOf(reply.Err))
+			}
+			ErrVals = append(ErrVals, reflect.ValueOf(RemoteObjectError{Err: "Server stopped."}))
 			return ErrVals
 		}
 		// create a new function value with the new function
