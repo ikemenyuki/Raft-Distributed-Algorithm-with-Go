@@ -32,3 +32,6 @@ clean:
 # generate documentation for the package of interest
 docs:
 	cd src/$(PKGNAME); go doc -u -all > $(PKGNAME)-doc.txt
+
+mytest:
+	cd src/$(PKGNAME); go test -v -race -run TestCheckpoint_InitialElection

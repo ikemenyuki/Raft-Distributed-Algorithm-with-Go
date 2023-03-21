@@ -226,6 +226,7 @@ func (ctrl *Controller) startCommit(cmd int, expectedPeers int) int {
 		index := -1
 		for i := 0; i < ctrl.numPeers; i++ {
 			sr := ctrl.issueCommand(i, cmd)
+			fmt.Printf("Node %d, sr.Index %d, sr.Leader %t\n", i, sr.Index, sr.Leader)
 			if sr.Index > 0 && sr.Leader {
 				index = sr.Index
 				break

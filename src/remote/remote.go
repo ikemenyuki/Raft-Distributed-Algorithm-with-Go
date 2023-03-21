@@ -1,48 +1,3 @@
-// support for generic Remote Object services over sockets
-// including a socket wrapper that can drop and/or delay messages arbitrarily
-// works with any* objects that can be gob-encoded for serialization
-//
-// the LeakySocket wrapper for net.Conn is provided in its entirety, and should
-// not be changed, though you may extend it with additional helper functions as
-// desired.  it is used directly by the test code.
-//
-// the RemoteObjectError type is also provided in its entirety, and should not
-// be changed.
-//
-// suggested RequestMsg and ReplyMsg types are included to get you started,
-// but they are only used internally to the remote library, so you can use
-// something else if you prefer
-//
-// the Service type represents the callee that manages remote objects, invokes
-// calls from callers, and returns suitable results and/or remote errors
-//
-// the StubFactory converts a struct of function declarations into a functional
-// caller stub by automatically populating the function definitions.
-//
-// USAGE:
-// the desired usage of this library is as follows (not showing all error-checking
-// for clarity and brevity):
-//
-//  example ServiceInterface known to both client and server, defined as
-//  type ServiceInterface struct {
-//      ExampleMethod func(int, int) (int, remote.RemoteObjectError)
-//  }
-//
-//  1. server-side program calls NewService with interface and connection details, e.g.,
-//     obj := &ServiceObject{}
-//     srvc, err := remote.NewService(&ServiceInterface{}, obj, 9999, true, true)
-//
-//  2. client-side program calls StubFactory, e.g.,
-//     stub := &ServiceInterface{}
-//     err := StubFactory(stub, 9999, true, true)
-//
-//  3. client makes calls, e.g.,
-//     n, roe := stub.ExampleMethod(7, 14736)
-//
-//
-//
-//
-//
 // TODO *** here's what needs to be done for Lab 2:
 //  1. create the Service type and supporting functions, including but not
 //     limited to: NewService, Start, Stop, IsRunning, and GetCount (see below)
@@ -142,15 +97,14 @@ func (ls *LeakySocket) RecvObject() ([]byte, error) {
 		buf := make([]byte, 4096)
 		n := 0
 		var err error
-		for n <= 0 {
-			n, err = ls.s.Read(buf)
-			if n > 0 {
-				return buf[:n], nil
-			}
-			if err != nil {
-				if err != io.EOF {
-					return nil, errors.New("RecvObject Read error: " + err.Error())
-				}
+		// ls.s.SetReadDeadline(time.Now().Add(time.Duration(50) * time.Millisecond))
+		n, err = ls.s.Read(buf)
+		if n > 0 {
+			return buf[:n], nil
+		}
+		if err != nil {
+			if err != io.EOF {
+				return nil, errors.New("RecvObject Read error: " + err.Error())
 			}
 		}
 	}
@@ -233,11 +187,10 @@ type Service struct {
 	port       int
 	lossy      bool
 	delayed    bool
-	runningMu  sync.Mutex
 	running    bool
 	ln         net.Listener
 	count      int
-	countMu    sync.Mutex
+	mu         sync.Mutex
 	//       - status and configuration parameters, as needed
 }
 
@@ -304,20 +257,18 @@ func NewService(ifc interface{}, sobj interface{}, port int, lossy bool, delayed
 		port:       port,
 		lossy:      lossy,
 		delayed:    delayed,
-		runningMu:  sync.Mutex{},
 		running:    false,
 		count:      0,
-		countMu:    sync.Mutex{},
+		mu:         sync.Mutex{},
 	}
-
 	return s, nil
 }
 
 func (serv *Service) HandleClients() {
 	for {
-		serv.runningMu.Lock()
+		serv.mu.Lock()
 		running := serv.running
-		serv.runningMu.Unlock()
+		serv.mu.Unlock()
 		if !running {
 			return
 		}
@@ -409,14 +360,9 @@ func (serv *Service) Serve(conn net.Conn) {
 		fmt.Println(err)
 	}
 	// 6. Send the byte-string
-	for {
-		ok, _ = ls.SendObject(buff.Bytes())
-		if ok {
-			break
-		}
-	}
-	serv.countMu.Lock()
-	defer serv.countMu.Unlock()
+	_, _ = ls.SendObject(buff.Bytes())
+	serv.mu.Lock()
+	defer serv.mu.Unlock()
 	serv.count += 1
 	conn.Close()
 }
@@ -428,13 +374,17 @@ func (serv *Service) Start() error {
 	//
 	// if called on a service that is already running, print a warning
 	// but don't return an error or do anything else
-	if serv.running {
+	serv.mu.Lock()
+	running := serv.running
+	serv.mu.Unlock()
+	if running {
 		fmt.Println("Service is already running")
 		return nil
 	}
 	//
 	// otherwise, start the multithreaded tcp server at the given address
 	// and update Service state
+	serv.mu.Lock()
 	addr := ServerAddress + strconv.Itoa(serv.port)
 	ln, err := net.Listen("tcp", addr)
 	if err != nil {
@@ -444,6 +394,7 @@ func (serv *Service) Start() error {
 
 	serv.ln = ln
 	serv.running = true
+	serv.mu.Unlock()
 	go serv.HandleClients()
 	//
 	// IMPORTANT: Start() should not be a blocking call. once the Service
@@ -479,23 +430,25 @@ func (serv *Service) Start() error {
 // get the total number of remote calls served successfully by this Service
 func (serv *Service) GetCount() int {
 	// TODO: return the total number of remote calls served successfully by this Service
-	serv.countMu.Lock()
-	defer serv.countMu.Unlock()
+	serv.mu.Lock()
+	defer serv.mu.Unlock()
 	return serv.count
 }
 
 // return a boolean value indicating whether the Service is running
 func (serv *Service) IsRunning() bool {
 	// TODO: return a boolean value indicating whether the Service is running
+	serv.mu.Lock()
+	defer serv.mu.Unlock()
 	return serv.running
 }
 
 // stop the Service, change state accordingly, clean up any resources
 func (serv *Service) Stop() {
 	// TODO: stop the Service, change state accordingly, clean up any resources
-	serv.runningMu.Lock()
+	serv.mu.Lock()
 	serv.running = false
-	serv.runningMu.Unlock()
+	serv.mu.Unlock()
 	serv.ln.Close()
 }
 
@@ -601,12 +554,7 @@ func StubFactory(ifc interface{}, adr string, lossy bool, delayed bool) error {
 					fmt.Println(err)
 				}
 				// send the message using the leaky socket
-				for {
-					ok, _ := ls.SendObject(buf.Bytes())
-					if ok {
-						break
-					}
-				}
+				_, _ = ls.SendObject(buf.Bytes())
 				var repData []byte
 				repData, err = ls.RecvObject()
 				if err != nil {
@@ -656,8 +604,9 @@ func StubFactory(ifc interface{}, adr string, lossy bool, delayed bool) error {
 			if hassConn {
 				conn.Close()
 				ErrVals = append(ErrVals, reflect.ValueOf(reply.Err))
+			} else {
+				ErrVals = append(ErrVals, reflect.ValueOf(RemoteObjectError{Err: "Server stopped."}))
 			}
-			ErrVals = append(ErrVals, reflect.ValueOf(RemoteObjectError{Err: "Server stopped."}))
 			return ErrVals
 		}
 		// create a new function value with the new function
