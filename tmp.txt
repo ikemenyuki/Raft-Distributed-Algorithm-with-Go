@@ -1,0 +1,1947 @@
+for i in $(seq 1 30); do \
+  		cd src/raft; \
+  		go test -v -run TestFinal_Rejoin; \
+ 	done
+=== RUN   TestFinal_Rejoin
+Node  0  is Activated
+Node  2  is Activated
+Node  1  is Activated
+Node  0  claims to be a candidate
+Node  1  receives requestVote from  0
+Node  1  grants vote to  0
+Node  2  receives requestVote from  0
+Node  2  grants vote to  0
+Node  0  won the election
+Node  1  is Dectivated
+Node  1  successfully killed
+Node  2  is Dectivated
+Node  2  successfully killed
+new command  102  new leader log is  [{102 1}]
+new command  103  new leader log is  [{102 1} {103 1}]
+new command  104  new leader log is  [{102 1} {103 1} {104 1}]
+Node  0  is Dectivated
+Node  0  successfully killed
+Node  1  is Activated
+Node  2  is Activated
+Node  2  claims to be a candidate
+Node  1  claims to be a candidate
+Node  1  receives requestVote from  2
+Node  1  does not grant vote to  2
+Node  2  receives requestVote from  1
+Node  2  does not grant vote to  1
+Node  1  claims to be a candidate
+Node  2  receives requestVote from  1
+Node  2  grants vote to  1
+Node  1  won the election
+Node  1  claims to be a candidate
+Node  2  receives requestVote from  1
+Node  2  grants vote to  1
+Node  1  won the election
+Checking commitment after original leader failed ... Node 0, sr.Index 0, sr.Leader false
+new command  103  new leader log is  [{103 4}]
+Node 1, sr.Index 1, sr.Leader true
+ok
+Checking log consistency after new leader fails and partitioned leader reconnects ... Node  1  is Dectivated
+Node  1  successfully killed
+Node  0  is Activated
+Node 0, sr.Index 0, sr.Leader false
+Node 1, sr.Index 0, sr.Leader false
+Node 2, sr.Index 0, sr.Leader false
+Node  2  claims to be a candidate
+Node  0  receives requestVote from  2
+Node  0  grants vote to  2
+Node  2  won the election
+Node  2  claims to be a candidate
+Node  0  receives requestVote from  2
+Node  0  grants vote to  2
+Node  2  won the election
+Node 0, sr.Index 0, sr.Leader false
+Node 1, sr.Index 0, sr.Leader false
+new command  104  new leader log is  [{103 4} {104 6}]
+Node 2, sr.Index 2, sr.Leader true
+ok
+Checking log consistency after everyone rejoins ... Node  1  is Activated
+Node 0, sr.Index 0, sr.Leader false
+Node 1, sr.Index 0, sr.Leader false
+new command  105  new leader log is  [{103 4} {104 6} {105 6}]
+Node 2, sr.Index 3, sr.Leader true
+ok
+Node  0  is Dectivated
+Node  0  successfully killed
+Node  1  is Dectivated
+Node  1  successfully killed
+Node  2  is Dectivated
+Node  2  successfully killed
+--- PASS: TestFinal_Rejoin (8.98s)
+PASS
+ok  	_/Users/liaoyuexiang/Documents/CMU-grad/Spring2023/14736/lab2/src/raft	9.298s
+=== RUN   TestFinal_Rejoin
+Node  0  is Activated
+Node  1  is Activated
+Node  2  is Activated
+Node  0  claims to be a candidate
+Node  1  receives requestVote from  0
+Node  1  grants vote to  0
+Node  2  receives requestVote from  0
+Node  2  grants vote to  0
+Node  0  won the election
+Node  1  is Dectivated
+Node  1  successfully killed
+Node  2  is Dectivated
+Node  2  successfully killed
+new command  102  new leader log is  [{102 1}]
+new command  103  new leader log is  [{102 1} {103 1}]
+new command  104  new leader log is  [{102 1} {103 1} {104 1}]
+Node  0  is Dectivated
+Node  0  successfully killed
+Node  1  is Activated
+Node  1  claims to be a candidate
+Node  2  is Activated
+Node  1  claims to be a candidate
+Node  2  receives requestVote from  1
+Node  2  grants vote to  1
+Node  1  won the election
+Node  1  claims to be a candidate
+Node  2  receives requestVote from  1
+Node  2  grants vote to  1
+Node  1  won the election
+Checking commitment after original leader failed ... Node 0, sr.Index 0, sr.Leader false
+new command  103  new leader log is  [{103 4}]
+Node 1, sr.Index 1, sr.Leader true
+ok
+Checking log consistency after new leader fails and partitioned leader reconnects ... Node  1  is Dectivated
+Node  1  successfully killed
+Node  0  is Activated
+Node 0, sr.Index 0, sr.Leader false
+Node 1, sr.Index 0, sr.Leader false
+Node 2, sr.Index 0, sr.Leader false
+Node 0, sr.Index 0, sr.Leader false
+Node 1, sr.Index 0, sr.Leader false
+Node 2, sr.Index 0, sr.Leader false
+Node  2  claims to be a candidate
+Node  0  receives requestVote from  2
+Node  0  grants vote to  2
+Node  2  won the election
+Node 0, sr.Index 0, sr.Leader false
+Node 1, sr.Index 0, sr.Leader false
+new command  104  new leader log is  [{103 4} {104 5}]
+Node 2, sr.Index 2, sr.Leader true
+ok
+Checking log consistency after everyone rejoins ... Node  1  is Activated
+Node 0, sr.Index 0, sr.Leader false
+Node 1, sr.Index 0, sr.Leader false
+new command  105  new leader log is  [{103 4} {104 5} {105 5}]
+Node 2, sr.Index 3, sr.Leader true
+ok
+Node  0  is Dectivated
+Node  0  successfully killed
+Node  1  is Dectivated
+Node  1  successfully killed
+Node  2  is Dectivated
+Node  2  successfully killed
+--- PASS: TestFinal_Rejoin (9.72s)
+PASS
+ok  	_/Users/liaoyuexiang/Documents/CMU-grad/Spring2023/14736/lab2/src/raft	9.971s
+=== RUN   TestFinal_Rejoin
+Node  0  is Activated
+Node  1  is Activated
+Node  2  is Activated
+Node  1  claims to be a candidate
+Node  0  receives requestVote from  1
+Node  0  grants vote to  1
+Node  2  receives requestVote from  1
+Node  2  grants vote to  1
+Node  1  won the election
+Node  2  is Dectivated
+Node  2  successfully killed
+Node  0  is Dectivated
+Node  0  successfully killed
+new command  102  new leader log is  [{102 1}]
+new command  103  new leader log is  [{102 1} {103 1}]
+new command  104  new leader log is  [{102 1} {103 1} {104 1}]
+Node  1  is Dectivated
+Node  1  successfully killed
+Node  2  is Activated
+Node  0  is Activated
+Node  0  claims to be a candidate
+Node  2  receives requestVote from  0
+Node  2  grants vote to  0
+Node  0  won the election
+Node  0  claims to be a candidate
+Node  2  receives requestVote from  0
+Node  2  grants vote to  0
+Node  0  won the election
+Checking commitment after original leader failed ... new command  103  new leader log is  [{103 3}]
+Node 0, sr.Index 1, sr.Leader true
+ok
+Checking log consistency after new leader fails and partitioned leader reconnects ... Node  0  is Dectivated
+Node  0  successfully killed
+Node  1  is Activated
+Node 0, sr.Index 0, sr.Leader false
+Node 1, sr.Index 0, sr.Leader false
+Node 2, sr.Index 0, sr.Leader false
+Node  2  claims to be a candidate
+Node  1  receives requestVote from  2
+Node  1  grants vote to  2
+Node  2  won the election
+Node  2  claims to be a candidate
+Node  1  receives requestVote from  2
+Node  1  grants vote to  2
+Node  2  won the election
+Node 0, sr.Index 0, sr.Leader false
+Node 1, sr.Index 0, sr.Leader false
+new command  104  new leader log is  [{103 3} {104 5}]
+Node 2, sr.Index 2, sr.Leader true
+ok
+Checking log consistency after everyone rejoins ... Node  0  is Activated
+Node 0, sr.Index 0, sr.Leader false
+Node 1, sr.Index 0, sr.Leader false
+new command  105  new leader log is  [{103 3} {104 5} {105 5}]
+Node 2, sr.Index 3, sr.Leader true
+ok
+Node  0  is Dectivated
+Node  0  successfully killed
+Node  1  is Dectivated
+Node  1  successfully killed
+Node  2  is Dectivated
+Node  2  successfully killed
+--- PASS: TestFinal_Rejoin (9.21s)
+PASS
+ok  	_/Users/liaoyuexiang/Documents/CMU-grad/Spring2023/14736/lab2/src/raft	9.474s
+=== RUN   TestFinal_Rejoin
+Node  1  is Activated
+Node  2  is Activated
+Node  0  is Activated
+Node  1  claims to be a candidate
+Node  0  receives requestVote from  1
+Node  0  grants vote to  1
+Node  2  receives requestVote from  1
+Node  2  grants vote to  1
+Node  1  won the election
+Node  2  is Dectivated
+Node  2  successfully killed
+Node  0  is Dectivated
+Node  0  successfully killed
+new command  102  new leader log is  [{102 1}]
+new command  103  new leader log is  [{102 1} {103 1}]
+new command  104  new leader log is  [{102 1} {103 1} {104 1}]
+Node  1  is Dectivated
+Node  1  successfully killed
+Node  2  is Activated
+Node  2  claims to be a candidate
+Node  0  is Activated
+Node  0  claims to be a candidate
+Node  2  receives requestVote from  0
+Node  2  does not grant vote to  0
+Node  2  claims to be a candidate
+Node  0  receives requestVote from  2
+Node  0  grants vote to  2
+Node  2  won the election
+Node  2  claims to be a candidate
+Node  0  receives requestVote from  2
+Node  0  grants vote to  2
+Node  2  won the election
+Checking commitment after original leader failed ... Node 0, sr.Index 0, sr.Leader false
+Node 1, sr.Index 0, sr.Leader false
+new command  103  new leader log is  [{103 4}]
+Node 2, sr.Index 1, sr.Leader true
+ok
+Checking log consistency after new leader fails and partitioned leader reconnects ... Node  2  is Dectivated
+Node  2  successfully killed
+Node  1  is Activated
+Node 0, sr.Index 0, sr.Leader false
+Node 1, sr.Index 0, sr.Leader false
+Node 2, sr.Index 0, sr.Leader false
+Node  0  claims to be a candidate
+Node  1  receives requestVote from  0
+Node  1  grants vote to  0
+Node  0  won the election
+Node  0  claims to be a candidate
+Node  1  receives requestVote from  0
+Node  1  grants vote to  0
+Node  0  won the election
+new command  104  new leader log is  [{103 4} {104 6}]
+Node 0, sr.Index 2, sr.Leader true
+ok
+Checking log consistency after everyone rejoins ... Node  2  is Activated
+new command  105  new leader log is  [{103 4} {104 6} {105 6}]
+Node 0, sr.Index 3, sr.Leader true
+ok
+Node  0  is Dectivated
+Node  0  successfully killed
+Node  1  is Dectivated
+Node  1  successfully killed
+Node  2  is Dectivated
+Node  2  successfully killed
+--- PASS: TestFinal_Rejoin (9.19s)
+PASS
+ok  	_/Users/liaoyuexiang/Documents/CMU-grad/Spring2023/14736/lab2/src/raft	9.435s
+=== RUN   TestFinal_Rejoin
+Node  0  is Activated
+Node  2  is Activated
+Node  1  is Activated
+Node  2  claims to be a candidate
+Node  0  receives requestVote from  2
+Node  0  grants vote to  2
+Node  1  receives requestVote from  2
+Node  1  grants vote to  2
+Node  2  won the election
+Node  0  is Dectivated
+Node  0  successfully killed
+Node  1  is Dectivated
+Node  1  successfully killed
+new command  102  new leader log is  [{102 1}]
+new command  103  new leader log is  [{102 1} {103 1}]
+new command  104  new leader log is  [{102 1} {103 1} {104 1}]
+Node  2  is Dectivated
+Node  2  successfully killed
+Node  0  is Activated
+Node  1  is Activated
+Node  1  claims to be a candidate
+Node  0  receives requestVote from  1
+Node  0  grants vote to  1
+Node  1  won the election
+Node  1  claims to be a candidate
+Node  0  receives requestVote from  1
+Node  0  grants vote to  1
+Node  1  won the election
+Checking commitment after original leader failed ... Node 0, sr.Index 0, sr.Leader false
+new command  103  new leader log is  [{103 3}]
+Node 1, sr.Index 1, sr.Leader true
+ok
+Checking log consistency after new leader fails and partitioned leader reconnects ... Node  1  is Dectivated
+Node  1  successfully killed
+Node  2  is Activated
+Node 0, sr.Index 0, sr.Leader false
+Node 1, sr.Index 0, sr.Leader false
+Node 2, sr.Index 0, sr.Leader false
+Node  0  claims to be a candidate
+Node  2  receives requestVote from  0
+Node  2  grants vote to  0
+Node  0  won the election
+Node  0  claims to be a candidate
+Node  2  receives requestVote from  0
+Node  2  grants vote to  0
+Node  0  won the election
+new command  104  new leader log is  [{103 3} {104 5}]
+Node 0, sr.Index 2, sr.Leader true
+ok
+Checking log consistency after everyone rejoins ... Node  1  is Activated
+new command  105  new leader log is  [{103 3} {104 5} {105 5}]
+Node 0, sr.Index 3, sr.Leader true
+ok
+Node  0  is Dectivated
+Node  0  successfully killed
+Node  1  is Dectivated
+Node  1  successfully killed
+Node  2  is Dectivated
+Node  2  successfully killed
+--- PASS: TestFinal_Rejoin (9.01s)
+PASS
+ok  	_/Users/liaoyuexiang/Documents/CMU-grad/Spring2023/14736/lab2/src/raft	9.253s
+=== RUN   TestFinal_Rejoin
+Node  0  is Activated
+Node  2  is Activated
+Node  1  is Activated
+Node  0  claims to be a candidate
+Node  1  receives requestVote from  0
+Node  1  grants vote to  0
+Node  2  receives requestVote from  0
+Node  2  grants vote to  0
+Node  0  won the election
+Node  1  is Dectivated
+Node  1  successfully killed
+Node  2  is Dectivated
+Node  2  successfully killed
+new command  102  new leader log is  [{102 1}]
+new command  103  new leader log is  [{102 1} {103 1}]
+new command  104  new leader log is  [{102 1} {103 1} {104 1}]
+Node  0  is Dectivated
+Node  0  successfully killed
+Node  1  is Activated
+Node  1  claims to be a candidate
+Node  2  is Activated
+Node  2  claims to be a candidate
+Node  1  receives requestVote from  2
+Node  1  does not grant vote to  2
+Node  1  claims to be a candidate
+Node  1  claims to be a candidate
+Node  2  receives requestVote from  1
+Node  2  grants vote to  1
+Node  1  won the election
+Node  2  receives requestVote from  1
+Node  2  does not grant vote to  1
+Node  2  claims to be a candidate
+Node  1  receives requestVote from  2
+Node  1  grants vote to  2
+Node  2  won the election
+Node  2  claims to be a candidate
+Node  1  receives requestVote from  2
+Node  1  grants vote to  2
+Node  2  won the election
+Checking commitment after original leader failed ... Node 0, sr.Index 0, sr.Leader false
+Node 1, sr.Index 0, sr.Leader false
+new command  103  new leader log is  [{103 6}]
+Node 2, sr.Index 1, sr.Leader true
+ok
+Checking log consistency after new leader fails and partitioned leader reconnects ... Node  2  is Dectivated
+Node  2  successfully killed
+Node  0  is Activated
+Node 0, sr.Index 0, sr.Leader false
+Node 1, sr.Index 0, sr.Leader false
+Node 2, sr.Index 0, sr.Leader false
+Node  1  claims to be a candidate
+Node  0  receives requestVote from  1
+Node  0  grants vote to  1
+Node  1  won the election
+Node  1  claims to be a candidate
+Node  0  receives requestVote from  1
+Node  0  grants vote to  1
+Node  1  won the election
+Node 0, sr.Index 0, sr.Leader false
+new command  104  new leader log is  [{103 6} {104 8}]
+Node 1, sr.Index 2, sr.Leader true
+ok
+Checking log consistency after everyone rejoins ... Node  2  is Activated
+Node 0, sr.Index 0, sr.Leader false
+new command  105  new leader log is  [{103 6} {104 8} {105 8}]
+Node 1, sr.Index 3, sr.Leader true
+ok
+Node  0  is Dectivated
+Node  0  successfully killed
+Node  1  is Dectivated
+Node  1  successfully killed
+Node  2  is Dectivated
+Node  2  successfully killed
+--- PASS: TestFinal_Rejoin (9.19s)
+PASS
+ok  	_/Users/liaoyuexiang/Documents/CMU-grad/Spring2023/14736/lab2/src/raft	9.433s
+=== RUN   TestFinal_Rejoin
+Node  0  is Activated
+Node  1  is Activated
+Node  2  is Activated
+Node  0  claims to be a candidate
+Node  1  receives requestVote from  0
+Node  1  grants vote to  0
+Node  2  receives requestVote from  0
+Node  2  grants vote to  0
+Node  0  won the election
+Node  1  is Dectivated
+Node  1  successfully killed
+Node  2  is Dectivated
+Node  2  successfully killed
+new command  102  new leader log is  [{102 1}]
+new command  103  new leader log is  [{102 1} {103 1}]
+new command  104  new leader log is  [{102 1} {103 1} {104 1}]
+Node  0  is Dectivated
+Node  0  successfully killed
+Node  1  is Activated
+Node  1  claims to be a candidate
+Node  2  is Activated
+Node  1  claims to be a candidate
+Node  2  receives requestVote from  1
+Node  2  grants vote to  1
+Node  1  won the election
+Node  1  claims to be a candidate
+Node  2  receives requestVote from  1
+Node  2  grants vote to  1
+Node  1  won the election
+Checking commitment after original leader failed ... Node 0, sr.Index 0, sr.Leader false
+new command  103  new leader log is  [{103 4}]
+Node 1, sr.Index 1, sr.Leader true
+ok
+Checking log consistency after new leader fails and partitioned leader reconnects ... Node  1  is Dectivated
+Node  1  successfully killed
+Node  0  is Activated
+Node 0, sr.Index 0, sr.Leader false
+Node 1, sr.Index 0, sr.Leader false
+Node 2, sr.Index 0, sr.Leader false
+Node  2  claims to be a candidate
+Node  0  receives requestVote from  2
+Node  0  grants vote to  2
+Node  2  won the election
+Node 0, sr.Index 0, sr.Leader false
+Node 1, sr.Index 0, sr.Leader false
+new command  104  new leader log is  [{103 4} {104 5}]
+Node 2, sr.Index 2, sr.Leader true
+ok
+Checking log consistency after everyone rejoins ... Node  1  is Activated
+Node 0, sr.Index 0, sr.Leader false
+Node 1, sr.Index 0, sr.Leader false
+new command  105  new leader log is  [{103 4} {104 5} {105 5}]
+Node 2, sr.Index 3, sr.Leader true
+ok
+Node  0  is Dectivated
+Node  0  successfully killed
+Node  1  is Dectivated
+Node  1  successfully killed
+Node  2  is Dectivated
+Node  2  successfully killed
+--- PASS: TestFinal_Rejoin (9.42s)
+PASS
+ok  	_/Users/liaoyuexiang/Documents/CMU-grad/Spring2023/14736/lab2/src/raft	9.676s
+=== RUN   TestFinal_Rejoin
+Node  0  is Activated
+Node  2  is Activated
+Node  1  is Activated
+Node  0  claims to be a candidate
+Node  2  receives requestVote from  0
+Node  2  grants vote to  0
+Node  1  receives requestVote from  0
+Node  1  grants vote to  0
+Node  0  won the election
+Node  1  is Dectivated
+Node  1  successfully killed
+Node  2  is Dectivated
+Node  2  successfully killed
+new command  102  new leader log is  [{102 1}]
+new command  103  new leader log is  [{102 1} {103 1}]
+new command  104  new leader log is  [{102 1} {103 1} {104 1}]
+Node  0  is Dectivated
+Node  0  successfully killed
+Node  1  is Activated
+Node  1  claims to be a candidate
+Node  2  is Activated
+Node  2  claims to be a candidate
+Node  1  receives requestVote from  2
+Node  1  does not grant vote to  2
+Node  1  claims to be a candidate
+Node  2  receives requestVote from  1
+Node  2  grants vote to  1
+Node  1  won the election
+Node  1  claims to be a candidate
+Node  2  receives requestVote from  1
+Node  2  grants vote to  1
+Node  1  won the election
+Checking commitment after original leader failed ... Node 0, sr.Index 0, sr.Leader false
+new command  103  new leader log is  [{103 4}]
+Node 1, sr.Index 1, sr.Leader true
+ok
+Checking log consistency after new leader fails and partitioned leader reconnects ... Node  1  is Dectivated
+Node  1  successfully killed
+Node  0  is Activated
+Node 0, sr.Index 0, sr.Leader false
+Node 1, sr.Index 0, sr.Leader false
+Node 2, sr.Index 0, sr.Leader false
+Node  2  claims to be a candidate
+Node  0  receives requestVote from  2
+Node  0  grants vote to  2
+Node  2  won the election
+Node  2  claims to be a candidate
+Node  0  receives requestVote from  2
+Node  0  grants vote to  2
+Node  2  won the election
+Node 0, sr.Index 0, sr.Leader false
+Node 1, sr.Index 0, sr.Leader false
+new command  104  new leader log is  [{103 4} {104 6}]
+Node 2, sr.Index 2, sr.Leader true
+ok
+Checking log consistency after everyone rejoins ... Node  1  is Activated
+Node 0, sr.Index 0, sr.Leader false
+Node 1, sr.Index 0, sr.Leader false
+new command  105  new leader log is  [{103 4} {104 6} {105 6}]
+Node 2, sr.Index 3, sr.Leader true
+ok
+Node  0  is Dectivated
+Node  0  successfully killed
+Node  1  is Dectivated
+Node  1  successfully killed
+Node  2  is Dectivated
+Node  2  successfully killed
+--- PASS: TestFinal_Rejoin (9.00s)
+PASS
+ok  	_/Users/liaoyuexiang/Documents/CMU-grad/Spring2023/14736/lab2/src/raft	9.241s
+=== RUN   TestFinal_Rejoin
+Node  0  is Activated
+Node  1  is Activated
+Node  2  is Activated
+Node  0  claims to be a candidate
+Node  1  receives requestVote from  0
+Node  1  grants vote to  0
+Node  2  receives requestVote from  0
+Node  2  grants vote to  0
+Node  0  won the election
+Node  1  is Dectivated
+Node  1  successfully killed
+Node  2  is Dectivated
+Node  2  successfully killed
+new command  102  new leader log is  [{102 1}]
+new command  103  new leader log is  [{102 1} {103 1}]
+new command  104  new leader log is  [{102 1} {103 1} {104 1}]
+Node  0  is Dectivated
+Node  0  successfully killed
+Node  1  is Activated
+Node  1  claims to be a candidate
+Node  2  is Activated
+Node  1  claims to be a candidate
+Node  2  receives requestVote from  1
+Node  2  grants vote to  1
+Node  1  won the election
+Node  1  claims to be a candidate
+Node  2  receives requestVote from  1
+Node  2  grants vote to  1
+Node  1  won the election
+Checking commitment after original leader failed ... Node 0, sr.Index 0, sr.Leader false
+new command  103  new leader log is  [{103 4}]
+Node 1, sr.Index 1, sr.Leader true
+ok
+Checking log consistency after new leader fails and partitioned leader reconnects ... Node  1  is Dectivated
+Node  1  successfully killed
+Node  0  is Activated
+Node 0, sr.Index 0, sr.Leader false
+Node 1, sr.Index 0, sr.Leader false
+Node 2, sr.Index 0, sr.Leader false
+Node  0  claims to be a candidate
+Node  2  receives requestVote from  0
+Node  2  does not grant vote to  0
+Node 0, sr.Index 0, sr.Leader false
+Node 1, sr.Index 0, sr.Leader false
+Node 2, sr.Index 0, sr.Leader false
+Node  2  claims to be a candidate
+Node  0  receives requestVote from  2
+Node  0  grants vote to  2
+Node  2  won the election
+Node 0, sr.Index 0, sr.Leader false
+Node 1, sr.Index 0, sr.Leader false
+new command  104  new leader log is  [{103 4} {104 5}]
+Node 2, sr.Index 2, sr.Leader true
+ok
+Checking log consistency after everyone rejoins ... Node  1  is Activated
+Node 0, sr.Index 0, sr.Leader false
+Node 1, sr.Index 0, sr.Leader false
+new command  105  new leader log is  [{103 4} {104 5} {105 5}]
+Node 2, sr.Index 3, sr.Leader true
+ok
+Node  0  is Dectivated
+Node  0  successfully killed
+Node  1  is Dectivated
+Node  1  successfully killed
+Node  2  is Dectivated
+Node  2  successfully killed
+--- PASS: TestFinal_Rejoin (9.66s)
+PASS
+ok  	_/Users/liaoyuexiang/Documents/CMU-grad/Spring2023/14736/lab2/src/raft	9.910s
+=== RUN   TestFinal_Rejoin
+Node  0  is Activated
+Node  2  is Activated
+Node  1  is Activated
+Node  0  claims to be a candidate
+Node  2  receives requestVote from  0
+Node  2  grants vote to  0
+Node  1  receives requestVote from  0
+Node  1  grants vote to  0
+Node  0  won the election
+Node  1  is Dectivated
+Node  1  successfully killed
+Node  2  is Dectivated
+Node  2  successfully killed
+new command  102  new leader log is  [{102 1}]
+new command  103  new leader log is  [{102 1} {103 1}]
+new command  104  new leader log is  [{102 1} {103 1} {104 1}]
+Node  0  is Dectivated
+Node  0  successfully killed
+Node  1  is Activated
+Node  1  claims to be a candidate
+Node  2  is Activated
+Node  2  claims to be a candidate
+Node  1  receives requestVote from  2
+Node  1  does not grant vote to  2
+Node  1  claims to be a candidate
+Node  2  receives requestVote from  1
+Node  2  grants vote to  1
+Node  1  won the election
+Node  1  claims to be a candidate
+Node  2  receives requestVote from  1
+Node  2  grants vote to  1
+Node  1  won the election
+Checking commitment after original leader failed ... Node 0, sr.Index 0, sr.Leader false
+new command  103  new leader log is  [{103 4}]
+Node 1, sr.Index 1, sr.Leader true
+ok
+Checking log consistency after new leader fails and partitioned leader reconnects ... Node  1  is Dectivated
+Node  1  successfully killed
+Node  0  is Activated
+Node 0, sr.Index 0, sr.Leader false
+Node 1, sr.Index 0, sr.Leader false
+Node 2, sr.Index 0, sr.Leader false
+Node  2  claims to be a candidate
+Node  0  receives requestVote from  2
+Node  0  grants vote to  2
+Node  2  won the election
+Node  2  claims to be a candidate
+Node  0  receives requestVote from  2
+Node  0  grants vote to  2
+Node  2  won the election
+Node 0, sr.Index 0, sr.Leader false
+Node 1, sr.Index 0, sr.Leader false
+new command  104  new leader log is  [{103 4} {104 6}]
+Node 2, sr.Index 2, sr.Leader true
+ok
+Checking log consistency after everyone rejoins ... Node  1  is Activated
+Node 0, sr.Index 0, sr.Leader false
+Node 1, sr.Index 0, sr.Leader false
+new command  105  new leader log is  [{103 4} {104 6} {105 6}]
+Node 2, sr.Index 3, sr.Leader true
+ok
+Node  0  is Dectivated
+Node  0  successfully killed
+Node  1  is Dectivated
+Node  1  successfully killed
+Node  2  is Dectivated
+Node  2  successfully killed
+--- PASS: TestFinal_Rejoin (9.20s)
+PASS
+ok  	_/Users/liaoyuexiang/Documents/CMU-grad/Spring2023/14736/lab2/src/raft	9.452s
+=== RUN   TestFinal_Rejoin
+Node  0  is Activated
+Node  2  is Activated
+Node  1  is Activated
+Node  2  claims to be a candidate
+Node  0  receives requestVote from  2
+Node  0  grants vote to  2
+Node  1  receives requestVote from  2
+Node  1  grants vote to  2
+Node  2  won the election
+Node  0  is Dectivated
+Node  0  successfully killed
+Node  1  is Dectivated
+Node  1  successfully killed
+new command  102  new leader log is  [{102 1}]
+new command  103  new leader log is  [{102 1} {103 1}]
+new command  104  new leader log is  [{102 1} {103 1} {104 1}]
+Node  2  is Dectivated
+Node  2  successfully killed
+Node  0  is Activated
+Node  1  is Activated
+Node  1  claims to be a candidate
+Node  0  receives requestVote from  1
+Node  0  grants vote to  1
+Node  1  won the election
+Node  1  claims to be a candidate
+Node  1  claims to be a candidate
+Node  0  receives requestVote from  1
+Node  0  grants vote to  1
+Node  0  receives requestVote from  1
+Node  0  does not grant vote to  1
+Node  1  won the election
+Node  1  claims to be a candidate
+Node  0  receives requestVote from  1
+Node  0  grants vote to  1
+Node  1  won the election
+Checking commitment after original leader failed ... Node 0, sr.Index 0, sr.Leader false
+new command  103  new leader log is  [{103 4}]
+Node 1, sr.Index 1, sr.Leader true
+ok
+Checking log consistency after new leader fails and partitioned leader reconnects ... Node  1  is Dectivated
+Node  1  successfully killed
+Node  2  is Activated
+Node 0, sr.Index 0, sr.Leader false
+Node 1, sr.Index 0, sr.Leader false
+Node 2, sr.Index 0, sr.Leader false
+Node  0  claims to be a candidate
+Node  2  receives requestVote from  0
+Node  2  grants vote to  0
+Node  0  won the election
+new command  104  new leader log is  [{103 4} {104 5}]
+Node 0, sr.Index 2, sr.Leader true
+ok
+Checking log consistency after everyone rejoins ... Node  1  is Activated
+new command  105  new leader log is  [{103 4} {104 5} {105 5}]
+Node 0, sr.Index 3, sr.Leader true
+ok
+Node  0  is Dectivated
+Node  0  successfully killed
+Node  1  is Dectivated
+Node  1  successfully killed
+Node  2  is Dectivated
+Node  2  successfully killed
+--- PASS: TestFinal_Rejoin (9.44s)
+PASS
+ok  	_/Users/liaoyuexiang/Documents/CMU-grad/Spring2023/14736/lab2/src/raft	9.690s
+=== RUN   TestFinal_Rejoin
+Node  2  is Activated
+Node  0  is Activated
+Node  1  is Activated
+Node  0  claims to be a candidate
+Node  2  receives requestVote from  0
+Node  2  grants vote to  0
+Node  1  receives requestVote from  0
+Node  1  grants vote to  0
+Node  0  won the election
+Node  1  is Dectivated
+Node  1  successfully killed
+Node  2  is Dectivated
+Node  2  successfully killed
+new command  102  new leader log is  [{102 1}]
+new command  103  new leader log is  [{102 1} {103 1}]
+new command  104  new leader log is  [{102 1} {103 1} {104 1}]
+Node  0  is Dectivated
+Node  0  successfully killed
+Node  1  is Activated
+Node  2  is Activated
+Node  2  claims to be a candidate
+Node  1  receives requestVote from  2
+Node  1  grants vote to  2
+Node  2  won the election
+Node  2  claims to be a candidate
+Node  1  receives requestVote from  2
+Node  1  grants vote to  2
+Node  2  won the election
+Checking commitment after original leader failed ... Node 0, sr.Index 0, sr.Leader false
+Node 1, sr.Index 0, sr.Leader false
+new command  103  new leader log is  [{103 3}]
+Node 2, sr.Index 1, sr.Leader true
+ok
+Checking log consistency after new leader fails and partitioned leader reconnects ... Node  2  is Dectivated
+Node  2  successfully killed
+Node  0  is Activated
+Node 0, sr.Index 0, sr.Leader false
+Node 1, sr.Index 0, sr.Leader false
+Node 2, sr.Index 0, sr.Leader false
+Node 0, sr.Index 0, sr.Leader false
+Node 1, sr.Index 0, sr.Leader false
+Node 2, sr.Index 0, sr.Leader false
+Node  1  claims to be a candidate
+Node  0  receives requestVote from  1
+Node  0  grants vote to  1
+Node  1  won the election
+Node 0, sr.Index 0, sr.Leader false
+new command  104  new leader log is  [{103 3} {104 4}]
+Node 1, sr.Index 2, sr.Leader true
+ok
+Checking log consistency after everyone rejoins ... Node  2  is Activated
+Node 0, sr.Index 0, sr.Leader false
+new command  105  new leader log is  [{103 3} {104 4} {105 4}]
+Node 1, sr.Index 3, sr.Leader true
+ok
+Node  0  is Dectivated
+Node  0  successfully killed
+Node  1  is Dectivated
+Node  1  successfully killed
+Node  2  is Dectivated
+Node  2  successfully killed
+--- PASS: TestFinal_Rejoin (9.45s)
+PASS
+ok  	_/Users/liaoyuexiang/Documents/CMU-grad/Spring2023/14736/lab2/src/raft	9.691s
+=== RUN   TestFinal_Rejoin
+Node  2  is Activated
+Node  1  is Activated
+Node  0  is Activated
+Node  2  claims to be a candidate
+Node  1  receives requestVote from  2
+Node  1  grants vote to  2
+Node  0  receives requestVote from  2
+Node  0  grants vote to  2
+Node  2  won the election
+Node  0  is Dectivated
+Node  0  successfully killed
+Node  1  is Dectivated
+Node  1  successfully killed
+new command  102  new leader log is  [{102 1}]
+new command  103  new leader log is  [{102 1} {103 1}]
+new command  104  new leader log is  [{102 1} {103 1} {104 1}]
+Node  2  is Dectivated
+Node  2  successfully killed
+Node  0  is Activated
+Node  1  is Activated
+Node  1  claims to be a candidate
+Node  0  receives requestVote from  1
+Node  0  grants vote to  1
+Node  1  won the election
+Node  1  claims to be a candidate
+Node  0  receives requestVote from  1
+Node  0  grants vote to  1
+Node  1  won the election
+Checking commitment after original leader failed ... Node 0, sr.Index 0, sr.Leader false
+new command  103  new leader log is  [{103 3}]
+Node 1, sr.Index 1, sr.Leader true
+ok
+Checking log consistency after new leader fails and partitioned leader reconnects ... Node  1  is Dectivated
+Node  1  successfully killed
+Node  2  is Activated
+Node 0, sr.Index 0, sr.Leader false
+Node 1, sr.Index 0, sr.Leader false
+Node 2, sr.Index 0, sr.Leader false
+Node  0  claims to be a candidate
+Node  2  receives requestVote from  0
+Node  2  grants vote to  0
+Node  0  won the election
+Node  0  claims to be a candidate
+Node  2  receives requestVote from  0
+Node  2  grants vote to  0
+Node  0  won the election
+new command  104  new leader log is  [{103 3} {104 5}]
+Node 0, sr.Index 2, sr.Leader true
+ok
+Checking log consistency after everyone rejoins ... Node  1  is Activated
+new command  105  new leader log is  [{103 3} {104 5} {105 5}]
+Node 0, sr.Index 3, sr.Leader true
+ok
+Node  0  is Dectivated
+Node  0  successfully killed
+Node  1  is Dectivated
+Node  1  successfully killed
+Node  2  is Dectivated
+Node  2  successfully killed
+--- PASS: TestFinal_Rejoin (9.21s)
+PASS
+ok  	_/Users/liaoyuexiang/Documents/CMU-grad/Spring2023/14736/lab2/src/raft	9.455s
+=== RUN   TestFinal_Rejoin
+Node  1  is Activated
+Node  2  is Activated
+Node  0  is Activated
+Node  0  claims to be a candidate
+Node  2  receives requestVote from  0
+Node  2  grants vote to  0
+Node  1  receives requestVote from  0
+Node  1  grants vote to  0
+Node  0  won the election
+Node  1  is Dectivated
+Node  1  successfully killed
+Node  2  is Dectivated
+Node  2  successfully killed
+new command  102  new leader log is  [{102 1}]
+new command  103  new leader log is  [{102 1} {103 1}]
+new command  104  new leader log is  [{102 1} {103 1} {104 1}]
+Node  0  is Dectivated
+Node  0  successfully killed
+Node  1  is Activated
+Node  2  is Activated
+Node  1  claims to be a candidate
+Node  2  receives requestVote from  1
+Node  2  grants vote to  1
+Node  1  won the election
+Node  1  claims to be a candidate
+Node  1  claims to be a candidate
+Node  2  receives requestVote from  1
+Node  2  grants vote to  1
+Node  1  won the election
+Node  2  receives requestVote from  1
+Node  2  grants vote to  1
+Node  1  claims to be a candidate
+Node  2  receives requestVote from  1
+Node  2  grants vote to  1
+Node  1  won the election
+Checking commitment after original leader failed ... Node 0, sr.Index 0, sr.Leader false
+new command  103  new leader log is  [{103 4}]
+Node 1, sr.Index 1, sr.Leader true
+ok
+Checking log consistency after new leader fails and partitioned leader reconnects ... Node  1  is Dectivated
+Node  1  successfully killed
+Node  0  is Activated
+Node 0, sr.Index 0, sr.Leader false
+Node 1, sr.Index 0, sr.Leader false
+Node 2, sr.Index 0, sr.Leader false
+Node  2  claims to be a candidate
+Node  0  receives requestVote from  2
+Node  0  grants vote to  2
+Node  2  won the election
+Node 0, sr.Index 0, sr.Leader false
+Node 1, sr.Index 0, sr.Leader false
+new command  104  new leader log is  [{103 4} {104 5}]
+Node 2, sr.Index 2, sr.Leader true
+ok
+Checking log consistency after everyone rejoins ... Node  1  is Activated
+Node 0, sr.Index 0, sr.Leader false
+Node 1, sr.Index 0, sr.Leader false
+new command  105  new leader log is  [{103 4} {104 5} {105 5}]
+Node 2, sr.Index 3, sr.Leader true
+ok
+Node  0  is Dectivated
+Node  0  successfully killed
+Node  1  is Dectivated
+Node  1  successfully killed
+Node  2  is Dectivated
+Node  2  successfully killed
+--- PASS: TestFinal_Rejoin (9.21s)
+PASS
+ok  	_/Users/liaoyuexiang/Documents/CMU-grad/Spring2023/14736/lab2/src/raft	9.455s
+=== RUN   TestFinal_Rejoin
+Node  0  is Activated
+Node  2  is Activated
+Node  1  is Activated
+Node  2  claims to be a candidate
+Node  0  receives requestVote from  2
+Node  0  grants vote to  2
+Node  1  receives requestVote from  2
+Node  1  grants vote to  2
+Node  2  won the election
+Node  0  is Dectivated
+Node  0  successfully killed
+Node  1  is Dectivated
+Node  1  successfully killed
+new command  102  new leader log is  [{102 1}]
+new command  103  new leader log is  [{102 1} {103 1}]
+new command  104  new leader log is  [{102 1} {103 1} {104 1}]
+Node  2  is Dectivated
+Node  2  successfully killed
+Node  0  is Activated
+Node  0  claims to be a candidate
+Node  1  is Activated
+Node  0  claims to be a candidate
+Node  1  receives requestVote from  0
+Node  1  grants vote to  0
+Node  0  won the election
+Node  0  claims to be a candidate
+Node  1  receives requestVote from  0
+Node  1  grants vote to  0
+Node  0  won the election
+Checking commitment after original leader failed ... new command  103  new leader log is  [{103 4}]
+Node 0, sr.Index 1, sr.Leader true
+ok
+Checking log consistency after new leader fails and partitioned leader reconnects ... Node  0  is Dectivated
+Node  0  successfully killed
+Node  2  is Activated
+Node 0, sr.Index 0, sr.Leader false
+Node 1, sr.Index 0, sr.Leader false
+Node 2, sr.Index 0, sr.Leader false
+Node  1  claims to be a candidate
+Node  2  receives requestVote from  1
+Node  2  grants vote to  1
+Node  1  won the election
+Node 0, sr.Index 0, sr.Leader false
+new command  104  new leader log is  [{103 4} {104 5}]
+Node 1, sr.Index 2, sr.Leader true
+ok
+Checking log consistency after everyone rejoins ... Node  0  is Activated
+Node 0, sr.Index 0, sr.Leader false
+new command  105  new leader log is  [{103 4} {104 5} {105 5}]
+Node 1, sr.Index 3, sr.Leader true
+ok
+Node  0  is Dectivated
+Node  0  successfully killed
+Node  1  is Dectivated
+Node  1  successfully killed
+Node  2  is Dectivated
+Node  2  successfully killed
+--- PASS: TestFinal_Rejoin (9.41s)
+PASS
+ok  	_/Users/liaoyuexiang/Documents/CMU-grad/Spring2023/14736/lab2/src/raft	9.654s
+=== RUN   TestFinal_Rejoin
+Node  0  is Activated
+Node  1  is Activated
+Node  2  is Activated
+Node  1  claims to be a candidate
+Node  0  receives requestVote from  1
+Node  0  grants vote to  1
+Node  2  receives requestVote from  1
+Node  2  grants vote to  1
+Node  1  won the election
+Node  2  is Dectivated
+Node  2  successfully killed
+Node  0  is Dectivated
+Node  0  successfully killed
+new command  102  new leader log is  [{102 1}]
+new command  103  new leader log is  [{102 1} {103 1}]
+new command  104  new leader log is  [{102 1} {103 1} {104 1}]
+Node  1  is Dectivated
+Node  1  successfully killed
+Node  2  is Activated
+Node  2  claims to be a candidate
+Node  0  is Activated
+Node  0  claims to be a candidate
+Node  2  receives requestVote from  0
+Node  2  grants vote to  0
+Node  0  won the election
+Checking commitment after original leader failed ... new command  103  new leader log is  [{103 3}]
+Node 0, sr.Index 1, sr.Leader true
+ok
+Checking log consistency after new leader fails and partitioned leader reconnects ... Node  0  is Dectivated
+Node  0  successfully killed
+Node  1  is Activated
+Node  2  claims to be a candidate
+Node  1  receives requestVote from  2
+Node  1  grants vote to  2
+Node  2  won the election
+Node 0, sr.Index 0, sr.Leader false
+Node 1, sr.Index 0, sr.Leader false
+new command  104  new leader log is  [{103 3} {104 4}]
+Node 2, sr.Index 2, sr.Leader true
+Node  2  claims to be a candidate
+Node  1  receives requestVote from  2
+Node  1  grants vote to  2
+Node  2  won the election
+Node 0, sr.Index 0, sr.Leader false
+Node 1, sr.Index 0, sr.Leader false
+new command  104  new leader log is  [{103 3} {104 4} {104 5}]
+Node 2, sr.Index 3, sr.Leader true
+ok
+Checking log consistency after everyone rejoins ... Node  0  is Activated
+Node 0, sr.Index 0, sr.Leader false
+Node 1, sr.Index 0, sr.Leader false
+new command  105  new leader log is  [{103 3} {104 4} {104 5} {105 5}]
+Node 2, sr.Index 4, sr.Leader true
+ok
+Node  0  is Dectivated
+Node  0  successfully killed
+Node  1  is Dectivated
+Node  1  successfully killed
+Node  2  is Dectivated
+Node  2  successfully killed
+--- PASS: TestFinal_Rejoin (12.05s)
+PASS
+ok  	_/Users/liaoyuexiang/Documents/CMU-grad/Spring2023/14736/lab2/src/raft	12.294s
+=== RUN   TestFinal_Rejoin
+Node  0  is Activated
+Node  2  is Activated
+Node  1  is Activated
+Node  2  claims to be a candidate
+Node  0  receives requestVote from  2
+Node  0  grants vote to  2
+Node  1  receives requestVote from  2
+Node  1  grants vote to  2
+Node  2  won the election
+Node  0  is Dectivated
+Node  0  successfully killed
+Node  1  is Dectivated
+Node  1  successfully killed
+new command  102  new leader log is  [{102 1}]
+new command  103  new leader log is  [{102 1} {103 1}]
+new command  104  new leader log is  [{102 1} {103 1} {104 1}]
+Node  2  is Dectivated
+Node  2  successfully killed
+Node  0  is Activated
+Node  0  claims to be a candidate
+Node  1  is Activated
+Node  1  claims to be a candidate
+Node  0  receives requestVote from  1
+Node  0  grants vote to  1
+Node  1  won the election
+Checking commitment after original leader failed ... Node 0, sr.Index 0, sr.Leader false
+new command  103  new leader log is  [{103 3}]
+Node 1, sr.Index 1, sr.Leader true
+ok
+Checking log consistency after new leader fails and partitioned leader reconnects ... Node  1  is Dectivated
+Node  1  successfully killed
+Node  0  claims to be a candidate
+Node  2  is Activated
+Node  2  receives requestVote from  0
+Node  2  grants vote to  0
+Node  0  won the election
+new command  104  new leader log is  [{103 3} {104 4}]
+Node 0, sr.Index 2, sr.Leader true
+Node  0  claims to be a candidate
+Node  2  receives requestVote from  0
+Node  2  grants vote to  0
+Node  0  won the election
+new command  104  new leader log is  [{103 3} {104 4} {104 5}]
+Node 0, sr.Index 3, sr.Leader true
+ok
+Checking log consistency after everyone rejoins ... Node  1  is Activated
+new command  105  new leader log is  [{103 3} {104 4} {104 5} {105 5}]
+Node 0, sr.Index 4, sr.Leader true
+ok
+Node  0  is Dectivated
+Node  0  successfully killed
+Node  1  is Dectivated
+Node  1  successfully killed
+Node  2  is Dectivated
+Node  2  successfully killed
+--- PASS: TestFinal_Rejoin (12.25s)
+PASS
+ok  	_/Users/liaoyuexiang/Documents/CMU-grad/Spring2023/14736/lab2/src/raft	12.494s
+=== RUN   TestFinal_Rejoin
+Node  1  is Activated
+Node  0  is Activated
+Node  2  is Activated
+Node  0  claims to be a candidate
+Node  1  receives requestVote from  0
+Node  1  grants vote to  0
+Node  2  receives requestVote from  0
+Node  2  grants vote to  0
+Node  0  won the election
+Node  1  is Dectivated
+Node  1  successfully killed
+Node  2  is Dectivated
+Node  2  successfully killed
+new command  102  new leader log is  [{102 1}]
+new command  103  new leader log is  [{102 1} {103 1}]
+new command  104  new leader log is  [{102 1} {103 1} {104 1}]
+Node  0  is Dectivated
+Node  0  successfully killed
+Node  1  is Activated
+Node  2  is Activated
+Node  1  claims to be a candidate
+Node  2  receives requestVote from  1
+Node  2  grants vote to  1
+Node  1  won the election
+Checking commitment after original leader failed ... Node 0, sr.Index 0, sr.Leader false
+new command  103  new leader log is  [{103 3}]
+Node 1, sr.Index 1, sr.Leader true
+ok
+Checking log consistency after new leader fails and partitioned leader reconnects ... Node  1  is Dectivated
+Node  1  successfully killed
+Node  0  is Activated
+Node 0, sr.Index 0, sr.Leader false
+Node 1, sr.Index 0, sr.Leader false
+Node 2, sr.Index 0, sr.Leader false
+Node  2  claims to be a candidate
+Node  0  receives requestVote from  2
+Node  0  grants vote to  2
+Node  2  won the election
+Node 0, sr.Index 0, sr.Leader false
+Node 1, sr.Index 0, sr.Leader false
+new command  104  new leader log is  [{103 3} {104 4}]
+Node 2, sr.Index 2, sr.Leader true
+ok
+Checking log consistency after everyone rejoins ... Node  1  is Activated
+Node 0, sr.Index 0, sr.Leader false
+Node 1, sr.Index 0, sr.Leader false
+new command  105  new leader log is  [{103 3} {104 4} {105 4}]
+Node 2, sr.Index 3, sr.Leader true
+ok
+Node  0  is Dectivated
+Node  0  successfully killed
+Node  1  is Dectivated
+Node  1  successfully killed
+Node  2  is Dectivated
+Node  2  successfully killed
+--- PASS: TestFinal_Rejoin (9.43s)
+PASS
+ok  	_/Users/liaoyuexiang/Documents/CMU-grad/Spring2023/14736/lab2/src/raft	9.676s
+=== RUN   TestFinal_Rejoin
+Node  0  is Activated
+Node  2  is Activated
+Node  1  is Activated
+Node  0  claims to be a candidate
+Node  2  receives requestVote from  0
+Node  2  grants vote to  0
+Node  1  receives requestVote from  0
+Node  1  grants vote to  0
+Node  0  won the election
+Node  1  is Dectivated
+Node  1  successfully killed
+Node  2  is Dectivated
+Node  2  successfully killed
+new command  102  new leader log is  [{102 1}]
+new command  103  new leader log is  [{102 1} {103 1}]
+new command  104  new leader log is  [{102 1} {103 1} {104 1}]
+Node  0  is Dectivated
+Node  0  successfully killed
+Node  1  is Activated
+Node  2  is Activated
+Node  1  claims to be a candidate
+Node  2  receives requestVote from  1
+Node  2  grants vote to  1
+Node  1  won the election
+Checking commitment after original leader failed ... Node 0, sr.Index 0, sr.Leader false
+new command  103  new leader log is  [{103 3}]
+Node 1, sr.Index 1, sr.Leader true
+ok
+Checking log consistency after new leader fails and partitioned leader reconnects ... Node  1  is Dectivated
+Node  1  successfully killed
+Node  0  is Activated
+Node 0, sr.Index 0, sr.Leader false
+Node 1, sr.Index 0, sr.Leader false
+Node 2, sr.Index 0, sr.Leader false
+Node 0, sr.Index 0, sr.Leader false
+Node 1, sr.Index 0, sr.Leader false
+Node 2, sr.Index 0, sr.Leader false
+Node  2  claims to be a candidate
+Node  0  receives requestVote from  2
+Node  0  grants vote to  2
+Node  2  won the election
+Node 0, sr.Index 0, sr.Leader false
+Node 1, sr.Index 0, sr.Leader false
+new command  104  new leader log is  [{103 3} {104 4}]
+Node 2, sr.Index 2, sr.Leader true
+ok
+Checking log consistency after everyone rejoins ... Node  1  is Activated
+Node 0, sr.Index 0, sr.Leader false
+Node 1, sr.Index 0, sr.Leader false
+new command  105  new leader log is  [{103 3} {104 4} {105 4}]
+Node 2, sr.Index 3, sr.Leader true
+ok
+Node  0  is Dectivated
+Node  0  successfully killed
+Node  1  is Dectivated
+Node  1  successfully killed
+Node  2  is Dectivated
+Node  2  successfully killed
+--- PASS: TestFinal_Rejoin (10.14s)
+PASS
+ok  	_/Users/liaoyuexiang/Documents/CMU-grad/Spring2023/14736/lab2/src/raft	10.384s
+=== RUN   TestFinal_Rejoin
+Node  2  is Activated
+Node  1  is Activated
+Node  0  is Activated
+Node  0  claims to be a candidate
+Node  2  receives requestVote from  0
+Node  1  receives requestVote from  0
+Node  1  grants vote to  0
+Node  2  grants vote to  0
+Node  0  won the election
+Node  1  is Dectivated
+Node  1  successfully killed
+Node  2  is Dectivated
+Node  2  successfully killed
+new command  102  new leader log is  [{102 1}]
+new command  103  new leader log is  [{102 1} {103 1}]
+new command  104  new leader log is  [{102 1} {103 1} {104 1}]
+Node  0  is Dectivated
+Node  0  successfully killed
+Node  1  is Activated
+Node  2  is Activated
+Node  1  claims to be a candidate
+Node  2  receives requestVote from  1
+Node  2  grants vote to  1
+Node  1  won the election
+Checking commitment after original leader failed ... Node 0, sr.Index 0, sr.Leader false
+new command  103  new leader log is  [{103 2}]
+Node 1, sr.Index 1, sr.Leader true
+ok
+Checking log consistency after new leader fails and partitioned leader reconnects ... Node  1  is Dectivated
+Node  1  successfully killed
+Node  0  is Activated
+Node 0, sr.Index 0, sr.Leader false
+Node 1, sr.Index 0, sr.Leader false
+Node 2, sr.Index 0, sr.Leader false
+Node  2  claims to be a candidate
+Node  0  receives requestVote from  2
+Node  0  grants vote to  2
+Node  2  won the election
+Node 0, sr.Index 0, sr.Leader false
+Node 1, sr.Index 0, sr.Leader false
+new command  104  new leader log is  [{103 2} {104 3}]
+Node 2, sr.Index 2, sr.Leader true
+ok
+Checking log consistency after everyone rejoins ... Node  1  is Activated
+Node 0, sr.Index 0, sr.Leader false
+Node 1, sr.Index 0, sr.Leader false
+new command  105  new leader log is  [{103 2} {104 3} {105 3}]
+Node 2, sr.Index 3, sr.Leader true
+ok
+Node  0  is Dectivated
+Node  0  successfully killed
+Node  1  is Dectivated
+Node  1  successfully killed
+Node  2  is Dectivated
+Node  2  successfully killed
+--- PASS: TestFinal_Rejoin (9.64s)
+PASS
+ok  	_/Users/liaoyuexiang/Documents/CMU-grad/Spring2023/14736/lab2/src/raft	9.893s
+=== RUN   TestFinal_Rejoin
+Node  0  is Activated
+Node  1  is Activated
+Node  2  is Activated
+Node  1  claims to be a candidate
+Node  0  receives requestVote from  1
+Node  0  grants vote to  1
+Node  2  receives requestVote from  1
+Node  2  grants vote to  1
+Node  1  won the election
+Node  2  is Dectivated
+Node  2  successfully killed
+Node  0  is Dectivated
+Node  0  successfully killed
+new command  102  new leader log is  [{102 1}]
+new command  103  new leader log is  [{102 1} {103 1}]
+new command  104  new leader log is  [{102 1} {103 1} {104 1}]
+Node  1  is Dectivated
+Node  1  successfully killed
+Node  2  is Activated
+Node  2  claims to be a candidate
+Node  0  is Activated
+Node  2  claims to be a candidate
+Node  0  receives requestVote from  2
+Node  0  grants vote to  2
+Node  2  won the election
+Node  2  claims to be a candidate
+Node  0  receives requestVote from  2
+Node  0  grants vote to  2
+Node  2  claims to be a candidate
+Node  2  won the election
+Node  0  receives requestVote from  2
+Node  0  does not grant vote to  2
+Checking commitment after original leader failed ... Node 0, sr.Index 0, sr.Leader false
+Node 1, sr.Index 0, sr.Leader false
+new command  103  new leader log is  [{103 4}]
+Node 2, sr.Index 1, sr.Leader true
+Node  2  claims to be a candidate
+Node  0  receives requestVote from  2
+Node  0  grants vote to  2
+Node  2  won the election
+Node 0, sr.Index 0, sr.Leader false
+Node 1, sr.Index 0, sr.Leader false
+new command  103  new leader log is  [{103 4} {103 5}]
+Node 2, sr.Index 2, sr.Leader true
+ok
+Checking log consistency after new leader fails and partitioned leader reconnects ... Node  2  is Dectivated
+Node  2  successfully killed
+Node  1  is Activated
+Node 0, sr.Index 0, sr.Leader false
+Node 1, sr.Index 0, sr.Leader false
+Node 2, sr.Index 0, sr.Leader false
+Node  0  claims to be a candidate
+Node  1  receives requestVote from  0
+Node  1  grants vote to  0
+Node  0  won the election
+new command  104  new leader log is  [{103 4} {103 5} {104 6}]
+Node 0, sr.Index 3, sr.Leader true
+ok
+Checking log consistency after everyone rejoins ... Node  2  is Activated
+new command  105  new leader log is  [{103 4} {103 5} {104 6} {105 6}]
+Node 0, sr.Index 4, sr.Leader true
+ok
+Node  0  is Dectivated
+Node  0  successfully killed
+Node  1  is Dectivated
+Node  1  successfully killed
+Node  2  is Dectivated
+Node  2  successfully killed
+--- PASS: TestFinal_Rejoin (12.94s)
+PASS
+ok  	_/Users/liaoyuexiang/Documents/CMU-grad/Spring2023/14736/lab2/src/raft	13.196s
+=== RUN   TestFinal_Rejoin
+Node  0  is Activated
+Node  2  is Activated
+Node  1  is Activated
+Node  1  claims to be a candidate
+Node  2  receives requestVote from  1
+Node  2  grants vote to  1
+Node  0  receives requestVote from  1
+Node  0  grants vote to  1
+Node  1  won the election
+Node  2  is Dectivated
+Node  2  successfully killed
+Node  0  is Dectivated
+Node  0  successfully killed
+new command  102  new leader log is  [{102 1}]
+new command  103  new leader log is  [{102 1} {103 1}]
+new command  104  new leader log is  [{102 1} {103 1} {104 1}]
+Node  1  is Dectivated
+Node  1  successfully killed
+Node  2  is Activated
+Node  0  is Activated
+Node  2  claims to be a candidate
+Node  0  receives requestVote from  2
+Node  0  grants vote to  2
+Node  2  won the election
+Node  2  claims to be a candidate
+Node  0  receives requestVote from  2
+Node  0  grants vote to  2
+Node  2  won the election
+Checking commitment after original leader failed ... Node 0, sr.Index 0, sr.Leader false
+Node 1, sr.Index 0, sr.Leader false
+new command  103  new leader log is  [{103 3}]
+Node 2, sr.Index 1, sr.Leader true
+ok
+Checking log consistency after new leader fails and partitioned leader reconnects ... Node  2  is Dectivated
+Node  2  successfully killed
+Node  1  is Activated
+Node 0, sr.Index 0, sr.Leader false
+Node 1, sr.Index 0, sr.Leader false
+Node 2, sr.Index 0, sr.Leader false
+Node  0  claims to be a candidate
+Node  1  receives requestVote from  0
+Node  1  grants vote to  0
+Node  0  won the election
+new command  104  new leader log is  [{103 3} {104 4}]
+Node 0, sr.Index 2, sr.Leader true
+ok
+Checking log consistency after everyone rejoins ... Node  2  is Activated
+new command  105  new leader log is  [{103 3} {104 4} {105 4}]
+Node 0, sr.Index 3, sr.Leader true
+ok
+Node  0  is Dectivated
+Node  0  successfully killed
+Node  1  is Dectivated
+Node  1  successfully killed
+Node  2  is Dectivated
+Node  2  successfully killed
+--- PASS: TestFinal_Rejoin (9.62s)
+PASS
+ok  	_/Users/liaoyuexiang/Documents/CMU-grad/Spring2023/14736/lab2/src/raft	9.882s
+=== RUN   TestFinal_Rejoin
+Node  0  is Activated
+Node  1  is Activated
+Node  2  is Activated
+Node  0  claims to be a candidate
+Node  1  receives requestVote from  0
+Node  1  grants vote to  0
+Node  0  won the election
+Node  2  receives requestVote from  0
+Node  2  grants vote to  0
+Node  1  is Dectivated
+Node  1  successfully killed
+Node  2  is Dectivated
+Node  2  successfully killed
+new command  102  new leader log is  [{102 1}]
+new command  103  new leader log is  [{102 1} {103 1}]
+new command  104  new leader log is  [{102 1} {103 1} {104 1}]
+Node  0  is Dectivated
+Node  0  successfully killed
+Node  1  is Activated
+Node  2  is Activated
+Node  2  claims to be a candidate
+Node  1  receives requestVote from  2
+Node  1  grants vote to  2
+Node  2  won the election
+Node  2  claims to be a candidate
+Node  1  receives requestVote from  2
+Node  1  grants vote to  2
+Node  2  won the election
+Checking commitment after original leader failed ... Node 0, sr.Index 0, sr.Leader false
+Node 1, sr.Index 0, sr.Leader false
+new command  103  new leader log is  [{103 3}]
+Node 2, sr.Index 1, sr.Leader true
+ok
+Checking log consistency after new leader fails and partitioned leader reconnects ... Node  2  is Dectivated
+Node  2  successfully killed
+Node  0  is Activated
+Node 0, sr.Index 0, sr.Leader false
+Node 1, sr.Index 0, sr.Leader false
+Node 2, sr.Index 0, sr.Leader false
+Node  1  claims to be a candidate
+Node  0  receives requestVote from  1
+Node  0  grants vote to  1
+Node  1  won the election
+Node 0, sr.Index 0, sr.Leader false
+new command  104  new leader log is  [{103 3} {104 4}]
+Node 1, sr.Index 2, sr.Leader true
+ok
+Checking log consistency after everyone rejoins ... Node  2  is Activated
+Node 0, sr.Index 0, sr.Leader false
+new command  105  new leader log is  [{103 3} {104 4} {105 4}]
+Node 1, sr.Index 3, sr.Leader true
+ok
+Node  0  is Dectivated
+Node  0  successfully killed
+Node  1  is Dectivated
+Node  1  successfully killed
+Node  2  is Dectivated
+Node  2  successfully killed
+--- PASS: TestFinal_Rejoin (9.64s)
+PASS
+ok  	_/Users/liaoyuexiang/Documents/CMU-grad/Spring2023/14736/lab2/src/raft	9.887s
+=== RUN   TestFinal_Rejoin
+Node  0  is Activated
+Node  2  is Activated
+Node  1  is Activated
+Node  2  claims to be a candidate
+Node  1  receives requestVote from  2
+Node  1  grants vote to  2
+Node  0  receives requestVote from  2
+Node  0  grants vote to  2
+Node  2  won the election
+Node  0  is Dectivated
+Node  0  successfully killed
+Node  1  is Dectivated
+Node  1  successfully killed
+new command  102  new leader log is  [{102 1}]
+new command  103  new leader log is  [{102 1} {103 1}]
+new command  104  new leader log is  [{102 1} {103 1} {104 1}]
+Node  2  is Dectivated
+Node  2  successfully killed
+Node  0  is Activated
+Node  1  is Activated
+Node  0  claims to be a candidate
+Node  1  receives requestVote from  0
+Node  1  grants vote to  0
+Node  0  won the election
+Checking commitment after original leader failed ... new command  103  new leader log is  [{103 3}]
+Node 0, sr.Index 1, sr.Leader true
+ok
+Checking log consistency after new leader fails and partitioned leader reconnects ... Node  0  is Dectivated
+Node  0  successfully killed
+Node  2  is Activated
+Node 0, sr.Index 0, sr.Leader false
+Node 1, sr.Index 0, sr.Leader false
+Node 2, sr.Index 0, sr.Leader false
+Node  1  claims to be a candidate
+Node  2  receives requestVote from  1
+Node  2  grants vote to  1
+Node  1  won the election
+Node 0, sr.Index 0, sr.Leader false
+new command  104  new leader log is  [{103 3} {104 4}]
+Node 1, sr.Index 2, sr.Leader true
+ok
+Checking log consistency after everyone rejoins ... Node  0  is Activated
+Node 0, sr.Index 0, sr.Leader false
+new command  105  new leader log is  [{103 3} {104 4} {105 4}]
+Node 1, sr.Index 3, sr.Leader true
+ok
+Node  0  is Dectivated
+Node  0  successfully killed
+Node  1  is Dectivated
+Node  1  successfully killed
+Node  2  is Dectivated
+Node  2  successfully killed
+--- PASS: TestFinal_Rejoin (9.23s)
+PASS
+ok  	_/Users/liaoyuexiang/Documents/CMU-grad/Spring2023/14736/lab2/src/raft	9.481s
+=== RUN   TestFinal_Rejoin
+Node  1  is Activated
+Node  2  is Activated
+Node  0  is Activated
+Node  2  claims to be a candidate
+Node  0  receives requestVote from  2
+Node  0  grants vote to  2
+Node  1  receives requestVote from  2
+Node  1  grants vote to  2
+Node  2  won the election
+Node  0  is Dectivated
+Node  0  successfully killed
+Node  1  is Dectivated
+Node  1  successfully killed
+new command  102  new leader log is  [{102 1}]
+new command  103  new leader log is  [{102 1} {103 1}]
+new command  104  new leader log is  [{102 1} {103 1} {104 1}]
+Node  2  is Dectivated
+Node  2  successfully killed
+Node  0  is Activated
+Node  0  claims to be a candidate
+Node  1  is Activated
+Node  1  claims to be a candidate
+Node  0  receives requestVote from  1
+Node  0  does not grant vote to  1
+Node  0  claims to be a candidate
+Node  0  claims to be a candidate
+Node  1  receives requestVote from  0
+Node  1  grants vote to  0
+Node  0  won the election
+Node  0  claims to be a candidate
+Node  1  receives requestVote from  0
+Node  1  grants vote to  0
+Node  0  won the election
+Checking commitment after original leader failed ... new command  103  new leader log is  [{103 5}]
+Node 0, sr.Index 1, sr.Leader true
+ok
+Checking log consistency after new leader fails and partitioned leader reconnects ... Node  0  is Dectivated
+Node  0  successfully killed
+Node  2  is Activated
+Node 0, sr.Index 0, sr.Leader false
+Node 1, sr.Index 0, sr.Leader false
+Node 2, sr.Index 0, sr.Leader false
+Node  1  claims to be a candidate
+Node  2  receives requestVote from  1
+Node  2  grants vote to  1
+Node  1  won the election
+Node  1  claims to be a candidate
+Node  2  receives requestVote from  1
+Node  2  grants vote to  1
+Node  1  won the election
+Node 0, sr.Index 0, sr.Leader false
+new command  104  new leader log is  [{103 5} {104 7}]
+Node 1, sr.Index 2, sr.Leader true
+ok
+Checking log consistency after everyone rejoins ... Node  0  is Activated
+Node 0, sr.Index 0, sr.Leader false
+new command  105  new leader log is  [{103 5} {104 7} {105 7}]
+Node 1, sr.Index 3, sr.Leader true
+ok
+Node  0  is Dectivated
+Node  0  successfully killed
+Node  1  is Dectivated
+Node  1  successfully killed
+Node  2  is Dectivated
+Node  2  successfully killed
+--- PASS: TestFinal_Rejoin (9.28s)
+PASS
+ok  	_/Users/liaoyuexiang/Documents/CMU-grad/Spring2023/14736/lab2/src/raft	9.532s
+=== RUN   TestFinal_Rejoin
+Node  2  is Activated
+Node  0  is Activated
+Node  1  is Activated
+Node  0  claims to be a candidate
+Node  2  receives requestVote from  0
+Node  2  grants vote to  0
+Node  1  receives requestVote from  0
+Node  1  grants vote to  0
+Node  0  won the election
+Node  1  is Dectivated
+Node  1  successfully killed
+Node  2  is Dectivated
+Node  2  successfully killed
+new command  102  new leader log is  [{102 1}]
+new command  103  new leader log is  [{102 1} {103 1}]
+new command  104  new leader log is  [{102 1} {103 1} {104 1}]
+Node  0  is Dectivated
+Node  0  successfully killed
+Node  1  is Activated
+Node  1  claims to be a candidate
+Node  2  is Activated
+Node  1  claims to be a candidate
+Node  2  receives requestVote from  1
+Node  2  grants vote to  1
+Node  1  won the election
+Node  1  claims to be a candidate
+Node  2  receives requestVote from  1
+Node  2  grants vote to  1
+Node  1  won the election
+Checking commitment after original leader failed ... Node 0, sr.Index 0, sr.Leader false
+new command  103  new leader log is  [{103 4}]
+Node 1, sr.Index 1, sr.Leader true
+ok
+Checking log consistency after new leader fails and partitioned leader reconnects ... Node  1  is Dectivated
+Node  1  successfully killed
+Node  0  is Activated
+Node 0, sr.Index 0, sr.Leader false
+Node 1, sr.Index 0, sr.Leader false
+Node 2, sr.Index 0, sr.Leader false
+Node  2  claims to be a candidate
+Node  0  receives requestVote from  2
+Node  0  grants vote to  2
+Node  2  won the election
+Node 0, sr.Index 0, sr.Leader false
+Node 1, sr.Index 0, sr.Leader false
+new command  104  new leader log is  [{103 4} {104 5}]
+Node 2, sr.Index 2, sr.Leader true
+ok
+Checking log consistency after everyone rejoins ... Node  1  is Activated
+Node 0, sr.Index 0, sr.Leader false
+Node 1, sr.Index 0, sr.Leader false
+new command  105  new leader log is  [{103 4} {104 5} {105 5}]
+Node 2, sr.Index 3, sr.Leader true
+ok
+Node  0  is Dectivated
+Node  0  successfully killed
+Node  1  is Dectivated
+Node  1  successfully killed
+Node  2  is Dectivated
+Node  2  successfully killed
+--- PASS: TestFinal_Rejoin (9.67s)
+PASS
+ok  	_/Users/liaoyuexiang/Documents/CMU-grad/Spring2023/14736/lab2/src/raft	9.913s
+=== RUN   TestFinal_Rejoin
+Node  0  is Activated
+Node  1  is Activated
+Node  2  is Activated
+Node  1  claims to be a candidate
+Node  0  receives requestVote from  1
+Node  0  grants vote to  1
+Node  2  receives requestVote from  1
+Node  2  grants vote to  1
+Node  1  won the election
+Node  2  is Dectivated
+Node  2  successfully killed
+Node  0  is Dectivated
+Node  0  successfully killed
+new command  102  new leader log is  [{102 1}]
+new command  103  new leader log is  [{102 1} {103 1}]
+new command  104  new leader log is  [{102 1} {103 1} {104 1}]
+Node  1  is Dectivated
+Node  1  successfully killed
+Node  2  is Activated
+Node  0  is Activated
+Node  0  claims to be a candidate
+Node  2  receives requestVote from  0
+Node  2  grants vote to  0
+Node  0  won the election
+Node  0  claims to be a candidate
+Node  2  receives requestVote from  0
+Node  2  grants vote to  0
+Node  0  won the election
+Checking commitment after original leader failed ... new command  103  new leader log is  [{103 3}]
+Node 0, sr.Index 1, sr.Leader true
+ok
+Checking log consistency after new leader fails and partitioned leader reconnects ... Node  0  is Dectivated
+Node  0  successfully killed
+Node  1  is Activated
+Node 0, sr.Index 0, sr.Leader false
+Node 1, sr.Index 0, sr.Leader false
+Node 2, sr.Index 0, sr.Leader false
+Node  2  claims to be a candidate
+Node 0, sr.Index 0, sr.Leader false
+Node 1, sr.Index 0, sr.Leader false
+Node  1  receives requestVote from  2
+Node  1  grants vote to  2
+Node  2  won the election
+new command  104  new leader log is  [{103 3} {104 4}]
+Node 2, sr.Index 2, sr.Leader true
+ok
+Checking log consistency after everyone rejoins ... Node  0  is Activated
+Node 0, sr.Index 0, sr.Leader false
+Node 1, sr.Index 0, sr.Leader false
+new command  105  new leader log is  [{103 3} {104 4} {105 4}]
+Node 2, sr.Index 3, sr.Leader true
+ok
+Node  0  is Dectivated
+Node  0  successfully killed
+Node  1  is Dectivated
+Node  1  successfully killed
+Node  2  is Dectivated
+Node  2  successfully killed
+--- PASS: TestFinal_Rejoin (9.67s)
+PASS
+ok  	_/Users/liaoyuexiang/Documents/CMU-grad/Spring2023/14736/lab2/src/raft	9.919s
+=== RUN   TestFinal_Rejoin
+Node  2  is Activated
+Node  1  is Activated
+Node  0  is Activated
+Node  2  claims to be a candidate
+Node  1  receives requestVote from  2
+Node  1  grants vote to  2
+Node  0  receives requestVote from  2
+Node  0  grants vote to  2
+Node  2  won the election
+Node  0  is Dectivated
+Node  0  successfully killed
+Node  1  is Dectivated
+Node  1  successfully killed
+new command  102  new leader log is  [{102 1}]
+new command  103  new leader log is  [{102 1} {103 1}]
+new command  104  new leader log is  [{102 1} {103 1} {104 1}]
+Node  2  is Dectivated
+Node  2  successfully killed
+Node  0  is Activated
+Node  0  claims to be a candidate
+Node  1  is Activated
+Node  1  claims to be a candidate
+Node  0  receives requestVote from  1
+Node  0  does not grant vote to  1
+Node  0  claims to be a candidate
+Node  1  receives requestVote from  0
+Node  1  grants vote to  0
+Node  0  won the election
+Node  0  claims to be a candidate
+Node  1  receives requestVote from  0
+Node  1  grants vote to  0
+Node  0  won the election
+Checking commitment after original leader failed ... new command  103  new leader log is  [{103 4}]
+Node 0, sr.Index 1, sr.Leader true
+ok
+Checking log consistency after new leader fails and partitioned leader reconnects ... Node  0  is Dectivated
+Node  0  successfully killed
+Node  2  is Activated
+Node 0, sr.Index 0, sr.Leader false
+Node 1, sr.Index 0, sr.Leader false
+Node 2, sr.Index 0, sr.Leader false
+Node  1  claims to be a candidate
+Node  2  receives requestVote from  1
+Node  2  grants vote to  1
+Node  1  won the election
+Node  1  claims to be a candidate
+Node  2  receives requestVote from  1
+Node  2  grants vote to  1
+Node  1  won the election
+Node 0, sr.Index 0, sr.Leader false
+new command  104  new leader log is  [{103 4} {104 6}]
+Node 1, sr.Index 2, sr.Leader true
+ok
+Checking log consistency after everyone rejoins ... Node  0  is Activated
+Node 0, sr.Index 0, sr.Leader false
+new command  105  new leader log is  [{103 4} {104 6} {105 6}]
+Node 1, sr.Index 3, sr.Leader true
+ok
+Node  0  is Dectivated
+Node  0  successfully killed
+Node  1  is Dectivated
+Node  1  successfully killed
+Node  2  is Dectivated
+Node  2  successfully killed
+--- PASS: TestFinal_Rejoin (9.01s)
+PASS
+ok  	_/Users/liaoyuexiang/Documents/CMU-grad/Spring2023/14736/lab2/src/raft	9.263s
+=== RUN   TestFinal_Rejoin
+Node  2  is Activated
+Node  0  is Activated
+Node  1  is Activated
+Node  2  claims to be a candidate
+Node  0  receives requestVote from  2
+Node  0  grants vote to  2
+Node  1  receives requestVote from  2
+Node  1  grants vote to  2
+Node  2  won the election
+Node  0  is Dectivated
+Node  0  successfully killed
+Node  1  is Dectivated
+Node  1  successfully killed
+new command  102  new leader log is  [{102 1}]
+new command  103  new leader log is  [{102 1} {103 1}]
+new command  104  new leader log is  [{102 1} {103 1} {104 1}]
+Node  2  is Dectivated
+Node  2  successfully killed
+Node  0  is Activated
+Node  1  is Activated
+Node  0  claims to be a candidate
+Node  1  receives requestVote from  0
+Node  1  grants vote to  0
+Node  0  won the election
+Checking commitment after original leader failed ... new command  103  new leader log is  [{103 3}]
+Node 0, sr.Index 1, sr.Leader true
+ok
+Checking log consistency after new leader fails and partitioned leader reconnects ... Node  0  is Dectivated
+Node  0  successfully killed
+Node  2  is Activated
+Node 0, sr.Index 0, sr.Leader false
+Node 1, sr.Index 0, sr.Leader false
+Node 2, sr.Index 0, sr.Leader false
+Node  1  claims to be a candidate
+Node  2  receives requestVote from  1
+Node  2  grants vote to  1
+Node  1  won the election
+Node 0, sr.Index 0, sr.Leader false
+new command  104  new leader log is  [{103 3} {104 4}]
+Node 1, sr.Index 2, sr.Leader true
+ok
+Checking log consistency after everyone rejoins ... Node  0  is Activated
+Node 0, sr.Index 0, sr.Leader false
+new command  105  new leader log is  [{103 3} {104 4} {105 4}]
+Node 1, sr.Index 3, sr.Leader true
+ok
+Node  0  is Dectivated
+Node  0  successfully killed
+Node  1  is Dectivated
+Node  1  successfully killed
+Node  2  is Dectivated
+Node  2  successfully killed
+--- PASS: TestFinal_Rejoin (9.46s)
+PASS
+ok  	_/Users/liaoyuexiang/Documents/CMU-grad/Spring2023/14736/lab2/src/raft	9.711s
+=== RUN   TestFinal_Rejoin
+Node  0  is Activated
+Node  1  is Activated
+Node  2  is Activated
+Node  1  claims to be a candidate
+Node  0  receives requestVote from  1
+Node  0  grants vote to  1
+Node  2  receives requestVote from  1
+Node  2  grants vote to  1
+Node  1  won the election
+Node  2  is Dectivated
+Node  2  successfully killed
+Node  0  is Dectivated
+Node  0  successfully killed
+new command  102  new leader log is  [{102 1}]
+new command  103  new leader log is  [{102 1} {103 1}]
+new command  104  new leader log is  [{102 1} {103 1} {104 1}]
+Node  1  is Dectivated
+Node  1  successfully killed
+Node  2  is Activated
+Node  0  is Activated
+Node  2  claims to be a candidate
+Node  0  receives requestVote from  2
+Node  0  grants vote to  2
+Node  2  won the election
+Checking commitment after original leader failed ... Node 0, sr.Index 0, sr.Leader false
+Node 1, sr.Index 0, sr.Leader false
+new command  103  new leader log is  [{103 3}]
+Node 2, sr.Index 1, sr.Leader true
+ok
+Checking log consistency after new leader fails and partitioned leader reconnects ... Node  2  is Dectivated
+Node  2  successfully killed
+Node  1  is Activated
+Node 0, sr.Index 0, sr.Leader false
+Node 1, sr.Index 0, sr.Leader false
+Node 2, sr.Index 0, sr.Leader false
+Node  0  claims to be a candidate
+Node  1  receives requestVote from  0
+Node  1  grants vote to  0
+Node  0  won the election
+new command  104  new leader log is  [{103 3} {104 4}]
+Node 0, sr.Index 2, sr.Leader true
+ok
+Checking log consistency after everyone rejoins ... Node  2  is Activated
+new command  105  new leader log is  [{103 3} {104 4} {105 4}]
+Node 0, sr.Index 3, sr.Leader true
+ok
+Node  0  is Dectivated
+Node  0  successfully killed
+Node  1  is Dectivated
+Node  1  successfully killed
+Node  2  is Dectivated
+Node  2  successfully killed
+--- PASS: TestFinal_Rejoin (9.43s)
+PASS
+ok  	_/Users/liaoyuexiang/Documents/CMU-grad/Spring2023/14736/lab2/src/raft	9.695s

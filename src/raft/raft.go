@@ -4,7 +4,6 @@ package raft
 
 import (
 	"encoding/gob"
-	"fmt"
 	"math/rand"
 	"strconv"
 	"sync"
@@ -80,8 +79,8 @@ type Raft struct {
 	NextIdx       []int           // The next index to send to each server when sending AppendEntries RPCs.
 	Won           chan bool       // A channel that is used to signal that this server has won the election.
 	MatchIdx      []int           // The index of the highest log entry known to be replicated on each server.
-	stopCh        chan bool       // A channel that is used to signal that the server should stop.
-	WonBool       bool            // Whether this server has won the election.
+	StopCh        chan bool       // A channel that is used to signal that the server should stop.
+	// WonBool       bool            // Whether this server has won the election.
 }
 
 // The LogCommand struct represents a single command in the Raft log.
@@ -109,8 +108,8 @@ func NewRaftPeer(port int, id int, num int) *Raft {
 		MatchIdx:      make([]int, num),
 		NextIdx:       make([]int, num),
 		RemoteClients: make([]RaftInterface, num),
-		stopCh:        make(chan bool),
-		WonBool:       false,
+		StopCh:        make(chan bool),
+		// WonBool:       false,
 	}
 	newRaft.RemoteService, _ = remote.NewService(&RaftInterface{}, newRaft, newRaft.Port, false, false)
 	basePort := port - id
@@ -123,7 +122,7 @@ func NewRaftPeer(port int, id int, num int) *Raft {
 		stub := &newRaft.RemoteClients[i]
 		err := remote.StubFactory(stub, addr+strconv.Itoa(basePort+i), false, false)
 		if err != nil {
-			fmt.Println(err.Error())
+			// fmt.Println(err.Error())
 		}
 	}
 	return newRaft
@@ -151,7 +150,7 @@ func (rf *Raft) ConvertToFollower(term int) {
 	rf.VotedFor = -1
 	rf.Leader = -1
 	rf.VoteCount = 0
-	rf.WonBool = false
+	// rf.WonBool = false
 }
 
 // This function convert any server to a LEADER status in Raft. A lock must
@@ -164,7 +163,7 @@ func (rf *Raft) ConvertToLeader() {
 	// empty vote status
 	rf.VoteCount = 0
 	rf.VotedFor = -1
-	rf.WonBool = false
+	// rf.WonBool = false
 	// reset NextIdx & MatchIdx
 	for i := 0; i < rf.PeerNum; i++ {
 		if i != rf.RaftId {
@@ -184,61 +183,61 @@ func (rf *Raft) ConvertToCandidate() {
 	rf.VotedFor = rf.RaftId
 	rf.VoteCount = 1
 	rf.Leader = -1
-	rf.WonBool = false
+	// rf.WonBool = false
 }
 
 func (rf *Raft) Run() {
 	for {
 		rf.Mu.Lock()
-		state := rf.State
 		status := rf.Status
 		rf.Mu.Unlock()
-		if state != ACTIIVE {
+		select {
+		case <-rf.StopCh:
+			return
+		default:
+			switch status {
+			case FOLLOWER:
+				select {
+				case <-rf.HeartBeat:
+				case <-rf.Voted:
+				case <-time.After(time.Millisecond * time.Duration(TIMEOUT+rand.Intn(250))):
+					// times up, need to become candidate
+					rf.Mu.Lock()
+					rf.ConvertToCandidate()
+					rf.Mu.Unlock()
+				}
+			case CANDIDATE:
+				// fmt.Println("Node ", rf.RaftId, " claims to be a candidate")
+				rf.BroadcastRequest()
+				select {
+				case <-rf.HeartBeat:
+					rf.Mu.Lock()
+					rf.ConvertToFollower(rf.CurrentTerm)
+					rf.Mu.Unlock()
+				case <-rf.Won:
+					// fmt.Println("Node ", rf.RaftId, " won the election")
+					rf.Mu.Lock()
+					rf.ConvertToLeader()
+					rf.Mu.Unlock()
+				case <-time.After(time.Millisecond * time.Duration(TIMEOUT+rand.Intn(250))):
+					rf.Mu.Lock()
+					rf.ConvertToCandidate()
+					rf.Mu.Unlock()
+				}
+			case LEADER:
+				// send broadcast append messages / heartbeat
+				rf.BroadcastAppend()
+				// sleep for a while
+				time.Sleep(150 * time.Millisecond)
+			}
+		}
+		rf.Mu.Lock()
+		if rf.State != ACTIIVE {
+			rf.Mu.Unlock()
 			break
 		}
+		rf.Mu.Unlock()
 		// run server according to their status
-		switch status {
-		case FOLLOWER:
-			select {
-			case <-rf.HeartBeat:
-			case <-rf.Voted:
-			case <-time.After(time.Millisecond * time.Duration(TIMEOUT+rand.Intn(250))):
-				// times up, need to become candidate
-				rf.Mu.Lock()
-				rf.ConvertToCandidate()
-				rf.Mu.Unlock()
-			case <-rf.stopCh:
-				return
-			}
-		case CANDIDATE:
-			rf.BroadcastRequest()
-			select {
-			case <-rf.HeartBeat:
-				rf.Mu.Lock()
-				rf.ConvertToFollower(rf.CurrentTerm)
-				rf.Mu.Unlock()
-			case <-rf.Won:
-				rf.Mu.Lock()
-				rf.ConvertToLeader()
-				rf.Mu.Unlock()
-			case <-time.After(time.Millisecond * time.Duration(TIMEOUT+rand.Intn(250))):
-				rf.Mu.Lock()
-				rf.ConvertToCandidate()
-				rf.Mu.Unlock()
-			case <-rf.stopCh:
-				return
-			}
-		case LEADER:
-			// send broadcast append messages / heartbeat
-			rf.BroadcastAppend()
-			// sleep for a while
-			time.Sleep(150 * time.Millisecond)
-			select {
-			case <-rf.stopCh:
-				return
-			default:
-			}
-		}
 	}
 }
 
@@ -278,11 +277,11 @@ func (rf *Raft) UpdateCommitIndex() {
 // to all the other peers to obtain their votes. Inside a for-loop, gorountines will be created for each
 // peer to call each SendRequest function.
 func (rf *Raft) BroadcastRequest() {
-	rf.Mu.Lock()
+	// rf.Mu.Lock()
 	status := rf.Status
 	peerNum := rf.PeerNum
 	raftId := rf.RaftId
-	rf.Mu.Unlock()
+	// rf.Mu.Unlock()
 	if status != CANDIDATE {
 		return
 	}
@@ -300,10 +299,6 @@ func (rf *Raft) BroadcastRequest() {
 // the main thread that it has won the election.
 func (rf *Raft) SendRequest(i int) {
 	rf.Mu.Lock()
-	if rf.WonBool {
-		rf.Mu.Unlock()
-		return
-	}
 	if rf.Status != CANDIDATE {
 		rf.Mu.Unlock()
 		return
@@ -312,29 +307,34 @@ func (rf *Raft) SendRequest(i int) {
 	candId := rf.RaftId
 	lastLogIdx := rf.GetLastIndex()
 	lastLogTerm := rf.GetLastTerm()
+	remoteClient := rf.RemoteClients[i]
 	rf.Mu.Unlock()
-	term, success, err := rf.RemoteClients[i].RequestVote(currTerm, candId, lastLogIdx, lastLogTerm)
+	term, success, err := remoteClient.RequestVote(currTerm, candId, lastLogIdx, lastLogTerm)
 
-	rf.Mu.Lock()
+	// rf.Mu.Lock()
 	if err.Err != "" {
-		rf.Mu.Unlock()
+		// rf.Mu.Unlock()
 		return
 	}
 	// if term > currTerm, convert to follower
 	if term > currTerm {
+		rf.Mu.Lock()
 		rf.ConvertToFollower(term)
 		rf.Mu.Unlock()
 		return
 	}
 	// if success, increment and count how many votes
 	if success {
+		rf.Mu.Lock()
+		voteCount := rf.VoteCount + 1
 		rf.VoteCount++
-		if rf.VoteCount > rf.PeerNum/2 {
-			rf.WonBool = true
+		expectedPeerNum := rf.PeerNum / 2
+		rf.Mu.Unlock()
+		if voteCount > expectedPeerNum {
 			rf.Won <- true
 		}
 	}
-	rf.Mu.Unlock()
+	// rf.Mu.Unlock()
 }
 
 // This function is called by LEADER for heartbeat and update log entries only. For heartbeat purposes,
@@ -368,7 +368,6 @@ func (rf *Raft) BroadcastAppend() {
 func (rf *Raft) SendAppend(i int) {
 	rf.Mu.Lock()
 	if rf.Status != LEADER {
-
 		rf.Mu.Unlock()
 		return
 	}
@@ -385,11 +384,12 @@ func (rf *Raft) SendAppend(i int) {
 	}
 	// prepare log entries to send
 	lastLogIdx := rf.GetLastIndex()
-	if lastLogIdx >= rf.NextIdx[i] {
+	if lastLogIdx >= rf.NextIdx[i] && rf.NextIdx[i] >= 0 {
 		logEntry = rf.Log[rf.NextIdx[i]:]
 	}
+	remoteClient := rf.RemoteClients[i]
 	rf.Mu.Unlock()
-	term, success, err := rf.RemoteClients[i].AppendEntries(currentTerm, leaderId, prevLogIdx, prevLogTerm, logEntry, commitIdx)
+	term, success, err := remoteClient.AppendEntries(currentTerm, leaderId, prevLogIdx, prevLogTerm, logEntry, commitIdx)
 	// if error connecting peer, return
 	if err.Err != "" {
 		return
@@ -422,9 +422,11 @@ func (rf *Raft) SendAppend(i int) {
 // The RPC function called by Raft Controller only to activate a Raft Server.
 func (rf *Raft) Activate() {
 	rf.Mu.Lock()
+	// fmt.Println("Node ", rf.RaftId, " is Activated")
 	rf.State = ACTIIVE
 	rf.ConvertToFollower(rf.CurrentTerm)
 	rf.RemoteService.Start()
+	rf.Won = make(chan bool)
 	rf.Mu.Unlock()
 	go rf.Run()
 }
@@ -432,11 +434,17 @@ func (rf *Raft) Activate() {
 // The RPC function called by Raft Controller only to deactivate a Raft Server.
 func (rf *Raft) Deactivate() {
 	rf.Mu.Lock()
+	// fmt.Println("Node ", rf.RaftId, " is Dectivated")
 	rf.State = SLEEP
 	rf.ConvertToFollower(rf.CurrentTerm)
 	rf.RemoteService.Stop()
-	rf.stopCh <- true
+	rf.Won = make(chan bool)
+	// fmt.Println("Node ", rf.RaftId, " successfully killed")
 	rf.Mu.Unlock()
+	select {
+	case rf.StopCh <- true:
+	default:
+	}
 }
 
 // RequestVote -- as described in the Raft paper, called by other Raft peer. When it is called,
@@ -447,11 +455,14 @@ func (rf *Raft) Deactivate() {
 //	 2. If votedFor is null or candidateId, and candidate’s log is at
 //		least as up-to-date as receiver’s log, grant vote (§5.2, §5.4)""
 func (rf *Raft) RequestVote(term int, candID int, candLastLogIdx int, candLastLogTerm int) (int, bool, remote.RemoteObjectError) {
-	rf.Mu.Lock()
-	defer rf.Mu.Unlock()
 	// 1. if term < rf.CurrTerm, reject the caller
+	rf.Mu.Lock()
+	// fmt.Println("Node ", rf.RaftId, " receives requestVote from ", candID)
 	if term < rf.CurrentTerm {
-		return rf.CurrentTerm, false, remote.RemoteObjectError{}
+		// fmt.Println("Node ", rf.RaftId, " does not grant vote to ", candID)
+		curTerm := rf.CurrentTerm
+		rf.Mu.Unlock()
+		return curTerm, false, remote.RemoteObjectError{}
 	} else if term > rf.CurrentTerm {
 		// convert to follower
 		rf.ConvertToFollower(term)
@@ -460,10 +471,14 @@ func (rf *Raft) RequestVote(term int, candID int, candLastLogIdx int, candLastLo
 	// 2. If votedFor is null or candidateId, and candidate’s log is at
 	// least as up-to-date as receiver’s log, grant vote (§5.2, §5.4)
 	if rf.VotedFor == -1 && rf.isLogUpToDate(candLastLogIdx, candLastLogTerm) {
+		// fmt.Println("Node ", rf.RaftId, " grants vote to ", candID)
 		rf.VotedFor = candID
+		rf.Mu.Unlock()
 		rf.Voted <- true
 		return term, true, remote.RemoteObjectError{}
 	}
+	// fmt.Println("Node ", rf.RaftId, " does not grant vote to ", candID)
+	rf.Mu.Unlock()
 	return term, false, remote.RemoteObjectError{}
 }
 
@@ -502,14 +517,18 @@ func (rf *Raft) isLogUpToDate(candidateLastLogIdx int, candidateLastLogTerm int)
 //		min(leaderCommit, index of last new entry)""
 func (rf *Raft) AppendEntries(term int, leadId int, prevLogIdx int, prevLogTerm int, logEntries []LogCommand, leadComitIdx int) (int, bool, remote.RemoteObjectError) {
 	rf.Mu.Lock()
-	defer rf.Mu.Unlock()
 	// check term
 	if term < rf.CurrentTerm {
-		return rf.CurrentTerm, false, remote.RemoteObjectError{}
+		curTerm := rf.CurrentTerm
+		rf.Mu.Unlock()
+		return curTerm, false, remote.RemoteObjectError{}
 	}
 	// send heartbeat channel
+	rf.Mu.Unlock()
 	rf.HeartBeat <- true
 	// convert to follower
+	rf.Mu.Lock()
+	defer rf.Mu.Unlock()
 	rf.ConvertToFollower(term)
 	logMatched := false
 	if prevLogIdx == -1 {
@@ -537,6 +556,7 @@ func (rf *Raft) AppendEntries(term int, leadId int, prevLogIdx int, prevLogTerm 
 		toComit := min(leadComitIdx, len(rf.Log))
 		rf.CommitIndex = toComit
 	}
+	// fmt.Printf("Node %d appended log from leader %d, now the log entry is", rf.RaftId, leadId)
 	return rf.CurrentTerm, true, remote.RemoteObjectError{}
 }
 
@@ -605,6 +625,7 @@ func (rf *Raft) NewCommand(command int) (StatusReport, remote.RemoteObjectError)
 	}
 
 	rf.Log = append(rf.Log, logEntry)
+	// fmt.Println("new command ", command, " new leader log is ", rf.Log)
 	rf.MatchIdx[rf.RaftId]++
 	serv := rf.RemoteService
 	// return the StatusReport

@@ -34,4 +34,10 @@ docs:
 	cd src/$(PKGNAME); go doc -u -all > $(PKGNAME)-doc.txt
 
 mytest:
-	cd src/$(PKGNAME); go test -v -race -run TestCheckpoint_InitialElection
+	cd src/$(PKGNAME); go test -v -run TestFinal_Backup
+
+test-loop:
+	for i in $$(seq 1 30); do \
+  		cd src/$(PKGNAME); \
+  		go test -v -run TestFinal_Rejoin; \
+ 	done

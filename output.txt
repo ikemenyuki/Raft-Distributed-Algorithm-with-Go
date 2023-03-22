@@ -1,0 +1,955 @@
+for i in $(seq 1 20); do \
+  		cd src/raft; \
+  		go test -v -run TestCheckpoint_ReElection; \
+ 	done
+=== RUN   TestCheckpoint_ReElection
+Node  0  is Activated
+Node  1  is Activated
+Node  2  is Activated
+Node  1  claims to be a candidate
+Node  2  receives requestVote from  1
+Node  2  grants vote to  1
+Node  0  receives requestVote from  1
+Node  0  grants vote to  1
+Node  1  won the election
+Checking for leader ... ok
+Checking for new leader after disconnecting previous leader ... Node  1  is Dectivated
+Node  1  successfully killed
+Node  2  claims to be a candidate
+Node  0  receives requestVote from  2
+Node  0  grants vote to  2
+Node  2  won the election
+ok
+Checking for leader after previous leader reconnects ... Node  1  is Activated
+ok
+Node  2  is Dectivated
+Node  2  successfully killed
+Node  0  is Dectivated
+Node  0  successfully killed
+Checking for no leader after majority disconnects ... Node  1  claims to be a candidate
+ok
+Checking for leader after follower reconnection ... Node  1  claims to be a candidate
+Node  1  claims to be a candidate
+Node  0  is Activated
+Node  1  claims to be a candidate
+Node  0  receives requestVote from  1
+Node  0  grants vote to  1
+Node  1  won the election
+ok
+Checking for leader after previous leader reconnection ... Node  2  is Activated
+ok
+Node  0  is Dectivated
+Node  0  successfully killed
+Node  1  is Dectivated
+Node  1  successfully killed
+Node  2  is Dectivated
+Node  2  successfully killed
+--- PASS: TestCheckpoint_ReElection (13.89s)
+PASS
+ok  	_/Users/liaoyuexiang/Documents/CMU-grad/Spring2023/14736/lab2/src/raft	14.198s
+=== RUN   TestCheckpoint_ReElection
+Node  0  is Activated
+Node  1  is Activated
+Node  2  is Activated
+Node  2  claims to be a candidate
+Node  1  receives requestVote from  2
+Node  1  grants vote to  2
+Node  0  receives requestVote from  2
+Node  0  grants vote to  2
+Node  2  won the election
+Checking for leader ... ok
+Checking for new leader after disconnecting previous leader ... Node  2  is Dectivated
+Node  2  successfully killed
+Node  1  claims to be a candidate
+Node  0  receives requestVote from  1
+Node  0  grants vote to  1
+Node  1  won the election
+ok
+Checking for leader after previous leader reconnects ... Node  2  is Activated
+ok
+Node  1  is Dectivated
+Node  1  successfully killed
+Node  2  is Dectivated
+Node  2  successfully killed
+Checking for no leader after majority disconnects ... Node  0  claims to be a candidate
+ok
+Checking for leader after follower reconnection ... Node  0  claims to be a candidate
+Node  0  claims to be a candidate
+Node  2  is Activated
+Node  0  claims to be a candidate
+Node  2  receives requestVote from  0
+Node  2  grants vote to  0
+Node  0  won the election
+ok
+Checking for leader after previous leader reconnection ... Node  1  is Activated
+ok
+Node  0  is Dectivated
+Node  0  successfully killed
+Node  1  is Dectivated
+Node  1  successfully killed
+Node  2  is Dectivated
+Node  2  successfully killed
+--- PASS: TestCheckpoint_ReElection (13.91s)
+PASS
+ok  	_/Users/liaoyuexiang/Documents/CMU-grad/Spring2023/14736/lab2/src/raft	14.191s
+=== RUN   TestCheckpoint_ReElection
+Node  0  is Activated
+Node  1  is Activated
+Node  2  is Activated
+Node  0  claims to be a candidate
+Node  1  receives requestVote from  0
+Node  1  grants vote to  0
+Node  2  receives requestVote from  0
+Node  2  grants vote to  0
+Node  0  won the election
+Checking for leader ... ok
+Checking for new leader after disconnecting previous leader ... Node  0  is Dectivated
+Node  0  successfully killed
+Node  2  claims to be a candidate
+Node  1  claims to be a candidate
+Node  2  receives requestVote from  1
+Node  2  does not grant vote to  1
+Node  1  receives requestVote from  2
+Node  1  does not grant vote to  2
+Node  1  claims to be a candidate
+Node  2  receives requestVote from  1
+Node  2  grants vote to  1
+Node  1  won the election
+ok
+Checking for leader after previous leader reconnects ... Node  0  is Activated
+ok
+Node  1  is Dectivated
+Node  1  successfully killed
+Node  2  is Dectivated
+Node  2  successfully killed
+Checking for no leader after majority disconnects ... Node  0  claims to be a candidate
+ok
+Checking for leader after follower reconnection ... Node  0  claims to be a candidate
+Node  0  claims to be a candidate
+Node  0  claims to be a candidate
+Node  2  is Activated
+Node  0  claims to be a candidate
+Node  2  receives requestVote from  0
+Node  2  grants vote to  0
+Node  0  won the election
+ok
+Checking for leader after previous leader reconnection ... Node  1  is Activated
+ok
+Node  0  is Dectivated
+Node  0  successfully killed
+Node  1  is Dectivated
+Node  1  successfully killed
+Node  2  is Dectivated
+Node  2  successfully killed
+--- PASS: TestCheckpoint_ReElection (13.95s)
+PASS
+ok  	_/Users/liaoyuexiang/Documents/CMU-grad/Spring2023/14736/lab2/src/raft	14.227s
+=== RUN   TestCheckpoint_ReElection
+Node  0  is Activated
+Node  1  is Activated
+Node  2  is Activated
+Node  2  claims to be a candidate
+Node  0  receives requestVote from  2
+Node  0  grants vote to  2
+Node  1  receives requestVote from  2
+Node  1  grants vote to  2
+Node  2  won the election
+Checking for leader ... ok
+Checking for new leader after disconnecting previous leader ... Node  2  is Dectivated
+Node  2  successfully killed
+Node  1  claims to be a candidate
+Node  0  receives requestVote from  1
+Node  0  grants vote to  1
+Node  1  won the election
+ok
+Checking for leader after previous leader reconnects ... Node  2  is Activated
+ok
+Node  1  is Dectivated
+Node  1  successfully killed
+Node  2  is Dectivated
+Node  2  successfully killed
+Checking for no leader after majority disconnects ... Node  0  claims to be a candidate
+Node  0  claims to be a candidate
+ok
+Checking for leader after follower reconnection ... Node  0  claims to be a candidate
+Node  0  claims to be a candidate
+Node  2  is Activated
+Node  0  claims to be a candidate
+Node  2  receives requestVote from  0
+Node  2  grants vote to  0
+Node  0  won the election
+ok
+Checking for leader after previous leader reconnection ... Node  1  is Activated
+ok
+Node  0  is Dectivated
+Node  0  successfully killed
+Node  1  is Dectivated
+Node  1  successfully killed
+Node  2  is Dectivated
+Node  2  successfully killed
+--- PASS: TestCheckpoint_ReElection (13.90s)
+PASS
+ok  	_/Users/liaoyuexiang/Documents/CMU-grad/Spring2023/14736/lab2/src/raft	14.206s
+=== RUN   TestCheckpoint_ReElection
+Node  0  is Activated
+Node  1  is Activated
+Node  2  is Activated
+Node  0  claims to be a candidate
+Node  2  receives requestVote from  0
+Node  2  grants vote to  0
+Node  1  receives requestVote from  0
+Node  1  grants vote to  0
+Node  0  won the election
+Checking for leader ... ok
+Checking for new leader after disconnecting previous leader ... Node  0  is Dectivated
+Node  0  successfully killed
+Node  2  claims to be a candidate
+Node  1  receives requestVote from  2
+Node  1  grants vote to  2
+Node  2  won the election
+ok
+Checking for leader after previous leader reconnects ... Node  0  is Activated
+ok
+Node  2  is Dectivated
+Node  2  successfully killed
+Node  0  is Dectivated
+Node  0  successfully killed
+Checking for no leader after majority disconnects ... Node  1  claims to be a candidate
+ok
+Checking for leader after follower reconnection ... Node  1  claims to be a candidate
+Node  1  claims to be a candidate
+Node  0  is Activated
+Node  1  claims to be a candidate
+Node  0  receives requestVote from  1
+Node  0  grants vote to  1
+Node  1  won the election
+ok
+Checking for leader after previous leader reconnection ... Node  2  is Activated
+ok
+Node  0  is Dectivated
+Node  0  successfully killed
+Node  1  is Dectivated
+Node  1  successfully killed
+Node  2  is Dectivated
+Node  2  successfully killed
+--- PASS: TestCheckpoint_ReElection (13.91s)
+PASS
+ok  	_/Users/liaoyuexiang/Documents/CMU-grad/Spring2023/14736/lab2/src/raft	14.192s
+=== RUN   TestCheckpoint_ReElection
+Node  0  is Activated
+Node  1  is Activated
+Node  2  is Activated
+Node  2  claims to be a candidate
+Node  1  receives requestVote from  2
+Node  1  grants vote to  2
+Node  0  receives requestVote from  2
+Node  0  grants vote to  2
+Node  2  won the election
+Checking for leader ... ok
+Checking for new leader after disconnecting previous leader ... Node  2  is Dectivated
+Node  2  successfully killed
+Node  1  claims to be a candidate
+Node  0  receives requestVote from  1
+Node  0  grants vote to  1
+Node  1  won the election
+ok
+Checking for leader after previous leader reconnects ... Node  2  is Activated
+ok
+Node  1  is Dectivated
+Node  1  successfully killed
+Node  2  is Dectivated
+Node  2  successfully killed
+Checking for no leader after majority disconnects ... Node  0  claims to be a candidate
+ok
+Checking for leader after follower reconnection ... Node  0  claims to be a candidate
+Node  0  claims to be a candidate
+Node  0  claims to be a candidate
+Node  2  is Activated
+Node  0  claims to be a candidate
+Node  2  receives requestVote from  0
+Node  2  grants vote to  0
+Node  0  won the election
+ok
+Checking for leader after previous leader reconnection ... Node  1  is Activated
+ok
+Node  0  is Dectivated
+Node  0  successfully killed
+Node  1  is Dectivated
+Node  1  successfully killed
+Node  2  is Dectivated
+Node  2  successfully killed
+--- PASS: TestCheckpoint_ReElection (13.89s)
+PASS
+ok  	_/Users/liaoyuexiang/Documents/CMU-grad/Spring2023/14736/lab2/src/raft	14.171s
+=== RUN   TestCheckpoint_ReElection
+Node  0  is Activated
+Node  1  is Activated
+Node  2  is Activated
+Node  1  claims to be a candidate
+Node  0  receives requestVote from  1
+Node  0  grants vote to  1
+Node  2  receives requestVote from  1
+Node  2  grants vote to  1
+Node  1  won the election
+Checking for leader ... ok
+Checking for new leader after disconnecting previous leader ... Node  1  is Dectivated
+Node  1  successfully killed
+Node  0  claims to be a candidate
+Node  2  claims to be a candidate
+Node  0  receives requestVote from  2
+Node  0  does not grant vote to  2
+Node  2  receives requestVote from  0
+Node  2  does not grant vote to  0
+Node  0  claims to be a candidate
+Node  2  receives requestVote from  0
+Node  2  grants vote to  0
+Node  0  won the election
+ok
+Checking for leader after previous leader reconnects ... Node  1  is Activated
+ok
+Node  0  is Dectivated
+Node  0  successfully killed
+Node  1  is Dectivated
+Node  1  successfully killed
+Checking for no leader after majority disconnects ... Node  2  claims to be a candidate
+Node  2  claims to be a candidate
+ok
+Checking for leader after follower reconnection ... Node  2  claims to be a candidate
+Node  2  claims to be a candidate
+Node  1  is Activated
+Node  2  claims to be a candidate
+Node  1  receives requestVote from  2
+Node  1  grants vote to  2
+Node  2  won the election
+ok
+Checking for leader after previous leader reconnection ... Node  0  is Activated
+ok
+Node  0  is Dectivated
+Node  0  successfully killed
+Node  1  is Dectivated
+Node  1  successfully killed
+Node  2  is Dectivated
+Node  2  successfully killed
+--- PASS: TestCheckpoint_ReElection (13.92s)
+PASS
+ok  	_/Users/liaoyuexiang/Documents/CMU-grad/Spring2023/14736/lab2/src/raft	14.200s
+=== RUN   TestCheckpoint_ReElection
+Node  0  is Activated
+Node  1  is Activated
+Node  2  is Activated
+Node  1  claims to be a candidate
+Node  2  receives requestVote from  1
+Node  2  grants vote to  1
+Node  0  receives requestVote from  1
+Node  0  grants vote to  1
+Node  1  won the election
+Checking for leader ... ok
+Checking for new leader after disconnecting previous leader ... Node  1  is Dectivated
+Node  1  successfully killed
+Node  0  claims to be a candidate
+Node  2  receives requestVote from  0
+Node  2  grants vote to  0
+Node  0  won the election
+ok
+Checking for leader after previous leader reconnects ... Node  1  is Activated
+ok
+Node  0  is Dectivated
+Node  0  successfully killed
+Node  1  is Dectivated
+Node  1  successfully killed
+Checking for no leader after majority disconnects ... Node  2  claims to be a candidate
+ok
+Checking for leader after follower reconnection ... Node  2  claims to be a candidate
+Node  2  claims to be a candidate
+Node  1  is Activated
+Node  2  claims to be a candidate
+Node  1  receives requestVote from  2
+Node  1  grants vote to  2
+Node  2  won the election
+ok
+Checking for leader after previous leader reconnection ... Node  0  is Activated
+ok
+Node  0  is Dectivated
+Node  0  successfully killed
+Node  1  is Dectivated
+Node  1  successfully killed
+Node  2  is Dectivated
+Node  2  successfully killed
+--- PASS: TestCheckpoint_ReElection (13.92s)
+PASS
+ok  	_/Users/liaoyuexiang/Documents/CMU-grad/Spring2023/14736/lab2/src/raft	14.224s
+=== RUN   TestCheckpoint_ReElection
+Node  0  is Activated
+Node  1  is Activated
+Node  2  is Activated
+Node  1  claims to be a candidate
+Node  2  receives requestVote from  1
+Node  2  grants vote to  1
+Node  0  receives requestVote from  1
+Node  0  grants vote to  1
+Node  1  won the election
+Checking for leader ... ok
+Checking for new leader after disconnecting previous leader ... Node  1  is Dectivated
+Node  1  successfully killed
+Node  0  claims to be a candidate
+Node  2  receives requestVote from  0
+Node  2  grants vote to  0
+Node  0  won the election
+ok
+Checking for leader after previous leader reconnects ... Node  1  is Activated
+ok
+Node  0  is Dectivated
+Node  0  successfully killed
+Node  1  is Dectivated
+Node  1  successfully killed
+Checking for no leader after majority disconnects ... Node  2  claims to be a candidate
+ok
+Checking for leader after follower reconnection ... Node  2  claims to be a candidate
+Node  2  claims to be a candidate
+Node  2  claims to be a candidate
+Node  1  is Activated
+Node  2  claims to be a candidate
+Node  1  receives requestVote from  2
+Node  1  grants vote to  2
+Node  2  won the election
+ok
+Checking for leader after previous leader reconnection ... Node  0  is Activated
+ok
+Node  0  is Dectivated
+Node  0  successfully killed
+Node  1  is Dectivated
+Node  1  successfully killed
+Node  2  is Dectivated
+Node  2  successfully killed
+--- PASS: TestCheckpoint_ReElection (13.89s)
+PASS
+ok  	_/Users/liaoyuexiang/Documents/CMU-grad/Spring2023/14736/lab2/src/raft	14.172s
+=== RUN   TestCheckpoint_ReElection
+Node  0  is Activated
+Node  1  is Activated
+Node  2  is Activated
+Node  1  claims to be a candidate
+Node  2  receives requestVote from  1
+Node  2  grants vote to  1
+Node  0  receives requestVote from  1
+Node  0  grants vote to  1
+Node  1  won the election
+Checking for leader ... ok
+Checking for new leader after disconnecting previous leader ... Node  1  is Dectivated
+Node  1  successfully killed
+Node  0  claims to be a candidate
+Node  2  receives requestVote from  0
+Node  2  grants vote to  0
+Node  0  won the election
+ok
+Checking for leader after previous leader reconnects ... Node  1  is Activated
+ok
+Node  0  is Dectivated
+Node  0  successfully killed
+Node  1  is Dectivated
+Node  1  successfully killed
+Checking for no leader after majority disconnects ... Node  2  claims to be a candidate
+ok
+Checking for leader after follower reconnection ... Node  2  claims to be a candidate
+Node  2  claims to be a candidate
+Node  1  is Activated
+Node  2  claims to be a candidate
+Node  1  receives requestVote from  2
+Node  1  grants vote to  2
+Node  2  won the election
+ok
+Checking for leader after previous leader reconnection ... Node  0  is Activated
+ok
+Node  0  is Dectivated
+Node  0  successfully killed
+Node  1  is Dectivated
+Node  1  successfully killed
+Node  2  is Dectivated
+Node  2  successfully killed
+--- PASS: TestCheckpoint_ReElection (13.90s)
+PASS
+ok  	_/Users/liaoyuexiang/Documents/CMU-grad/Spring2023/14736/lab2/src/raft	14.168s
+=== RUN   TestCheckpoint_ReElection
+Node  0  is Activated
+Node  1  is Activated
+Node  2  is Activated
+Node  0  claims to be a candidate
+Node  1  receives requestVote from  0
+Node  1  grants vote to  0
+Node  2  receives requestVote from  0
+Node  2  grants vote to  0
+Node  0  won the election
+Checking for leader ... ok
+Checking for new leader after disconnecting previous leader ... Node  0  is Dectivated
+Node  0  successfully killed
+Node  1  claims to be a candidate
+Node  2  claims to be a candidate
+Node  1  receives requestVote from  2
+Node  1  does not grant vote to  2
+Node  2  receives requestVote from  1
+Node  2  does not grant vote to  1
+Node  2  claims to be a candidate
+Node  1  receives requestVote from  2
+Node  1  grants vote to  2
+Node  2  won the election
+ok
+Checking for leader after previous leader reconnects ... Node  0  is Activated
+ok
+Node  2  is Dectivated
+Node  2  successfully killed
+Node  0  is Dectivated
+Node  0  successfully killed
+Checking for no leader after majority disconnects ... Node  1  claims to be a candidate
+ok
+Checking for leader after follower reconnection ... Node  1  claims to be a candidate
+Node  1  claims to be a candidate
+Node  1  claims to be a candidate
+Node  0  is Activated
+Node  1  claims to be a candidate
+Node  0  receives requestVote from  1
+Node  0  grants vote to  1
+Node  1  won the election
+ok
+Checking for leader after previous leader reconnection ... Node  2  is Activated
+ok
+Node  0  is Dectivated
+Node  0  successfully killed
+Node  1  is Dectivated
+Node  1  successfully killed
+Node  2  is Dectivated
+Node  2  successfully killed
+--- PASS: TestCheckpoint_ReElection (13.94s)
+PASS
+ok  	_/Users/liaoyuexiang/Documents/CMU-grad/Spring2023/14736/lab2/src/raft	14.221s
+=== RUN   TestCheckpoint_ReElection
+Node  0  is Activated
+Node  1  is Activated
+Node  2  is Activated
+Node  0  claims to be a candidate
+Node  2  receives requestVote from  0
+Node  2  grants vote to  0
+Node  1  receives requestVote from  0
+Node  1  grants vote to  0
+Node  0  won the election
+Checking for leader ... ok
+Checking for new leader after disconnecting previous leader ... Node  0  is Dectivated
+Node  0  successfully killed
+Node  1  claims to be a candidate
+Node  2  claims to be a candidate
+Node  1  receives requestVote from  2
+Node  1  does not grant vote to  2
+Node  2  receives requestVote from  1
+Node  2  does not grant vote to  1
+Node  2  claims to be a candidate
+Node  1  receives requestVote from  2
+Node  1  grants vote to  2
+Node  2  won the election
+ok
+Checking for leader after previous leader reconnects ... Node  0  is Activated
+ok
+Node  2  is Dectivated
+Node  2  successfully killed
+Node  0  is Dectivated
+Node  0  successfully killed
+Checking for no leader after majority disconnects ... Node  1  claims to be a candidate
+ok
+Checking for leader after follower reconnection ... Node  1  claims to be a candidate
+Node  1  claims to be a candidate
+Node  1  claims to be a candidate
+Node  0  is Activated
+Node  1  claims to be a candidate
+Node  0  receives requestVote from  1
+Node  0  grants vote to  1
+Node  1  won the election
+ok
+Checking for leader after previous leader reconnection ... Node  2  is Activated
+ok
+Node  0  is Dectivated
+Node  0  successfully killed
+Node  1  is Dectivated
+Node  1  successfully killed
+Node  2  is Dectivated
+Node  2  successfully killed
+--- PASS: TestCheckpoint_ReElection (14.42s)
+PASS
+ok  	_/Users/liaoyuexiang/Documents/CMU-grad/Spring2023/14736/lab2/src/raft	14.688s
+=== RUN   TestCheckpoint_ReElection
+Node  0  is Activated
+Node  1  is Activated
+Node  2  is Activated
+Node  1  claims to be a candidate
+Node  0  receives requestVote from  1
+Node  0  grants vote to  1
+Node  2  receives requestVote from  1
+Node  2  grants vote to  1
+Node  1  won the election
+Checking for leader ... ok
+Checking for new leader after disconnecting previous leader ... Node  1  is Dectivated
+Node  1  successfully killed
+Node  0  claims to be a candidate
+Node  2  receives requestVote from  0
+Node  2  grants vote to  0
+Node  0  won the election
+ok
+Checking for leader after previous leader reconnects ... Node  1  is Activated
+ok
+Node  0  is Dectivated
+Node  0  successfully killed
+Node  1  is Dectivated
+Node  1  successfully killed
+Checking for no leader after majority disconnects ... Node  2  claims to be a candidate
+ok
+Checking for leader after follower reconnection ... Node  2  claims to be a candidate
+Node  2  claims to be a candidate
+Node  2  claims to be a candidate
+Node  1  is Activated
+Node  2  claims to be a candidate
+Node  1  receives requestVote from  2
+Node  1  grants vote to  2
+Node  2  won the election
+ok
+Checking for leader after previous leader reconnection ... Node  0  is Activated
+ok
+Node  0  is Dectivated
+Node  0  successfully killed
+Node  1  is Dectivated
+Node  1  successfully killed
+Node  2  is Dectivated
+Node  2  successfully killed
+--- PASS: TestCheckpoint_ReElection (13.89s)
+PASS
+ok  	_/Users/liaoyuexiang/Documents/CMU-grad/Spring2023/14736/lab2/src/raft	14.174s
+=== RUN   TestCheckpoint_ReElection
+Node  0  is Activated
+Node  1  is Activated
+Node  2  is Activated
+Node  0  claims to be a candidate
+Node  2  receives requestVote from  0
+Node  2  grants vote to  0
+Node  1  receives requestVote from  0
+Node  1  grants vote to  0
+Node  0  won the election
+Checking for leader ... ok
+Checking for new leader after disconnecting previous leader ... Node  0  is Dectivated
+Node  0  successfully killed
+Node  2  claims to be a candidate
+Node  1  receives requestVote from  2
+Node  1  grants vote to  2
+Node  2  won the election
+ok
+Checking for leader after previous leader reconnects ... Node  0  is Activated
+ok
+Node  2  is Dectivated
+Node  2  successfully killed
+Node  0  is Dectivated
+Node  0  successfully killed
+Checking for no leader after majority disconnects ... Node  1  claims to be a candidate
+Node  1  claims to be a candidate
+ok
+Checking for leader after follower reconnection ... Node  1  claims to be a candidate
+Node  1  claims to be a candidate
+Node  0  is Activated
+Node  1  claims to be a candidate
+Node  0  receives requestVote from  1
+Node  0  grants vote to  1
+Node  1  won the election
+ok
+Checking for leader after previous leader reconnection ... Node  2  is Activated
+ok
+Node  0  is Dectivated
+Node  0  successfully killed
+Node  1  is Dectivated
+Node  1  successfully killed
+Node  2  is Dectivated
+Node  2  successfully killed
+--- PASS: TestCheckpoint_ReElection (13.89s)
+PASS
+ok  	_/Users/liaoyuexiang/Documents/CMU-grad/Spring2023/14736/lab2/src/raft	14.168s
+=== RUN   TestCheckpoint_ReElection
+Node  0  is Activated
+Node  1  is Activated
+Node  2  is Activated
+Node  2  claims to be a candidate
+Node  1  receives requestVote from  2
+Node  1  grants vote to  2
+Node  0  receives requestVote from  2
+Node  0  grants vote to  2
+Node  2  won the election
+Checking for leader ... ok
+Checking for new leader after disconnecting previous leader ... Node  2  is Dectivated
+Node  2  successfully killed
+Node  1  claims to be a candidate
+Node  0  receives requestVote from  1
+Node  0  grants vote to  1
+Node  1  won the election
+ok
+Checking for leader after previous leader reconnects ... Node  2  is Activated
+ok
+Node  1  is Dectivated
+Node  1  successfully killed
+Node  2  is Dectivated
+Node  2  successfully killed
+Checking for no leader after majority disconnects ... Node  0  claims to be a candidate
+Node  0  claims to be a candidate
+ok
+Checking for leader after follower reconnection ... Node  0  claims to be a candidate
+Node  0  claims to be a candidate
+Node  2  is Activated
+Node  0  claims to be a candidate
+Node  2  receives requestVote from  0
+Node  2  grants vote to  0
+Node  0  won the election
+ok
+Checking for leader after previous leader reconnection ... Node  1  is Activated
+ok
+Node  0  is Dectivated
+Node  0  successfully killed
+Node  1  is Dectivated
+Node  1  successfully killed
+Node  2  is Dectivated
+Node  2  successfully killed
+--- PASS: TestCheckpoint_ReElection (13.93s)
+PASS
+ok  	_/Users/liaoyuexiang/Documents/CMU-grad/Spring2023/14736/lab2/src/raft	14.207s
+=== RUN   TestCheckpoint_ReElection
+Node  0  is Activated
+Node  1  is Activated
+Node  2  is Activated
+Node  1  claims to be a candidate
+Node  2  receives requestVote from  1
+Node  2  grants vote to  1
+Node  0  receives requestVote from  1
+Node  0  grants vote to  1
+Node  1  won the election
+Checking for leader ... ok
+Checking for new leader after disconnecting previous leader ... Node  1  is Dectivated
+Node  1  successfully killed
+Node  0  claims to be a candidate
+Node  2  receives requestVote from  0
+Node  2  grants vote to  0
+Node  0  won the election
+ok
+Checking for leader after previous leader reconnects ... Node  1  is Activated
+ok
+Node  0  is Dectivated
+Node  0  successfully killed
+Node  1  is Dectivated
+Node  1  successfully killed
+Checking for no leader after majority disconnects ... Node  2  claims to be a candidate
+ok
+Checking for leader after follower reconnection ... Node  2  claims to be a candidate
+Node  2  claims to be a candidate
+Node  2  claims to be a candidate
+Node  1  is Activated
+Node  1  claims to be a candidate
+Node  2  receives requestVote from  1
+Node  2  does not grant vote to  1
+Node  2  claims to be a candidate
+Node  1  receives requestVote from  2
+Node  1  grants vote to  2
+Node  2  won the election
+ok
+Checking for leader after previous leader reconnection ... Node  0  is Activated
+ok
+Node  0  is Dectivated
+Node  0  successfully killed
+Node  1  is Dectivated
+Node  1  successfully killed
+Node  2  is Dectivated
+Node  2  successfully killed
+--- PASS: TestCheckpoint_ReElection (13.89s)
+PASS
+ok  	_/Users/liaoyuexiang/Documents/CMU-grad/Spring2023/14736/lab2/src/raft	14.161s
+=== RUN   TestCheckpoint_ReElection
+Node  0  is Activated
+Node  1  is Activated
+Node  2  is Activated
+Node  2  claims to be a candidate
+Node  1  receives requestVote from  2
+Node  1  grants vote to  2
+Node  0  receives requestVote from  2
+Node  0  grants vote to  2
+Node  2  won the election
+Checking for leader ... ok
+Checking for new leader after disconnecting previous leader ... Node  2  is Dectivated
+Node  2  successfully killed
+Node  0  claims to be a candidate
+Node  1  receives requestVote from  0
+Node  1  grants vote to  0
+Node  0  won the election
+ok
+Checking for leader after previous leader reconnects ... Node  2  is Activated
+ok
+Node  0  is Dectivated
+Node  0  successfully killed
+Node  1  is Dectivated
+Node  1  successfully killed
+Checking for no leader after majority disconnects ... Node  2  claims to be a candidate
+ok
+Checking for leader after follower reconnection ... Node  2  claims to be a candidate
+Node  2  claims to be a candidate
+Node  2  claims to be a candidate
+Node  1  is Activated
+Node  2  claims to be a candidate
+Node  1  receives requestVote from  2
+Node  1  grants vote to  2
+Node  2  won the election
+ok
+Checking for leader after previous leader reconnection ... Node  0  is Activated
+ok
+Node  0  is Dectivated
+Node  0  successfully killed
+Node  1  is Dectivated
+Node  1  successfully killed
+Node  2  is Dectivated
+Node  2  successfully killed
+--- PASS: TestCheckpoint_ReElection (13.92s)
+PASS
+ok  	_/Users/liaoyuexiang/Documents/CMU-grad/Spring2023/14736/lab2/src/raft	14.203s
+=== RUN   TestCheckpoint_ReElection
+Node  0  is Activated
+Node  1  is Activated
+Node  2  is Activated
+Node  0  claims to be a candidate
+Node  2  receives requestVote from  0
+Node  2  grants vote to  0
+Node  1  receives requestVote from  0
+Node  1  grants vote to  0
+Node  0  won the election
+Checking for leader ... ok
+Checking for new leader after disconnecting previous leader ... Node  0  is Dectivated
+Node  0  successfully killed
+Node  1  claims to be a candidate
+Node  2  receives requestVote from  1
+Node  2  grants vote to  1
+Node  1  won the election
+ok
+Checking for leader after previous leader reconnects ... Node  0  is Activated
+ok
+Node  1  is Dectivated
+Node  1  successfully killed
+Node  2  is Dectivated
+Node  2  successfully killed
+Checking for no leader after majority disconnects ... Node  0  claims to be a candidate
+ok
+Checking for leader after follower reconnection ... Node  0  claims to be a candidate
+Node  0  claims to be a candidate
+Node  0  claims to be a candidate
+Node  2  is Activated
+Node  2  claims to be a candidate
+Node  0  receives requestVote from  2
+Node  0  does not grant vote to  2
+Node  0  claims to be a candidate
+Node  2  receives requestVote from  0
+Node  2  grants vote to  0
+Node  0  won the election
+ok
+Checking for leader after previous leader reconnection ... Node  1  is Activated
+ok
+Node  0  is Dectivated
+Node  0  successfully killed
+Node  1  is Dectivated
+Node  1  successfully killed
+Node  2  is Dectivated
+Node  2  successfully killed
+--- PASS: TestCheckpoint_ReElection (13.95s)
+PASS
+ok  	_/Users/liaoyuexiang/Documents/CMU-grad/Spring2023/14736/lab2/src/raft	14.245s
+=== RUN   TestCheckpoint_ReElection
+Node  0  is Activated
+Node  1  is Activated
+Node  2  is Activated
+Node  2  claims to be a candidate
+Node  0  receives requestVote from  2
+Node  0  grants vote to  2
+Node  1  receives requestVote from  2
+Node  1  grants vote to  2
+Node  2  won the election
+Checking for leader ... ok
+Checking for new leader after disconnecting previous leader ... Node  2  is Dectivated
+Node  2  successfully killed
+Node  0  claims to be a candidate
+Node  1  receives requestVote from  0
+Node  1  grants vote to  0
+Node  0  won the election
+ok
+Checking for leader after previous leader reconnects ... Node  2  is Activated
+ok
+Node  0  is Dectivated
+Node  0  successfully killed
+Node  1  is Dectivated
+Node  1  successfully killed
+Checking for no leader after majority disconnects ... Node  2  claims to be a candidate
+Node  2  claims to be a candidate
+ok
+Checking for leader after follower reconnection ... Node  2  claims to be a candidate
+Node  2  claims to be a candidate
+Node  1  is Activated
+Node  2  claims to be a candidate
+Node  1  receives requestVote from  2
+Node  1  grants vote to  2
+Node  2  won the election
+ok
+Checking for leader after previous leader reconnection ... Node  0  is Activated
+ok
+Node  0  is Dectivated
+Node  0  successfully killed
+Node  1  is Dectivated
+Node  1  successfully killed
+Node  2  is Dectivated
+Node  2  successfully killed
+--- PASS: TestCheckpoint_ReElection (13.92s)
+PASS
+ok  	_/Users/liaoyuexiang/Documents/CMU-grad/Spring2023/14736/lab2/src/raft	14.199s
+=== RUN   TestCheckpoint_ReElection
+Node  0  is Activated
+Node  1  is Activated
+Node  2  is Activated
+Node  1  claims to be a candidate
+Node  0  receives requestVote from  1
+Node  0  grants vote to  1
+Node  2  receives requestVote from  1
+Node  2  grants vote to  1
+Node  1  won the election
+Checking for leader ... ok
+Checking for new leader after disconnecting previous leader ... Node  1  is Dectivated
+Node  1  successfully killed
+Node  0  claims to be a candidate
+Node  2  claims to be a candidate
+Node  0  receives requestVote from  2
+Node  0  does not grant vote to  2
+Node  2  receives requestVote from  0
+Node  2  does not grant vote to  0
+Node  0  claims to be a candidate
+Node  2  receives requestVote from  0
+Node  2  grants vote to  0
+Node  0  won the election
+ok
+Checking for leader after previous leader reconnects ... Node  1  is Activated
+ok
+Node  0  is Dectivated
+Node  0  successfully killed
+Node  1  is Dectivated
+Node  1  successfully killed
+Checking for no leader after majority disconnects ... Node  2  claims to be a candidate
+ok
+Checking for leader after follower reconnection ... Node  2  claims to be a candidate
+Node  2  claims to be a candidate
+Node  2  claims to be a candidate
+Node  1  is Activated
+Node  2  claims to be a candidate
+Node  1  receives requestVote from  2
+Node  1  grants vote to  2
+Node  2  won the election
+ok
+Checking for leader after previous leader reconnection ... Node  0  is Activated
+ok
+Node  0  is Dectivated
+Node  0  successfully killed
+Node  1  is Dectivated
+Node  1  successfully killed
+Node  2  is Dectivated
+Node  2  successfully killed
+--- PASS: TestCheckpoint_ReElection (14.41s)
+PASS
+ok  	_/Users/liaoyuexiang/Documents/CMU-grad/Spring2023/14736/lab2/src/raft	14.694s
