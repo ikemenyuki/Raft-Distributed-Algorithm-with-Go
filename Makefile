@@ -3,7 +3,7 @@
 
 # folder name of the package of interest
 PKGNAME = raft
-MKARGS = "-timeout 3600s"
+MKARGS = -timeout 3600s
 
 .PHONY: build test test-race checkpoint checkpoint-race clean docs
 .SILENT: build test test-race checkpoint checkpoint-race clean docs
@@ -32,3 +32,12 @@ clean:
 # generate documentation for the package of interest
 docs:
 	cd src/$(PKGNAME); go doc -u -all > $(PKGNAME)-doc.txt
+
+mytest:
+	cd src/$(PKGNAME); go test -v -run TestFinal_Backup
+
+test-loop:
+	for i in $$(seq 1 30); do \
+  		cd src/$(PKGNAME); \
+  		go test -v -run TestFinal_Rejoin; \
+ 	done
